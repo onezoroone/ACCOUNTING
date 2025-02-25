@@ -1,34 +1,27 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
-
 function App() {
-  const [count, setCount] = useState(0)
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <div className="page-body-wrapper">
+      <div className="content-wrapper">
+        <div className="mx-auto">
+          <div className="body-content">
+            <h5>Chào mừng đến với phần mềm kế toán!</h5>
+            <p style={{fontSize:'1rem'}}>Đăng nhập để tiếp tục.</p>
+            <form action="" className="pt-3">
+              <div className="form-group">
+                <input type="text" required="" className="form-control form-control-lg" placeholder="Tài khoản" value="" />
+              </div>
+              <div className="form-group">
+                <input type="password" required="" autoComplete="current-password" className="form-control form-control-lg" placeholder="Mật khẩu" value="" />
+              </div>
+              <div className="mt-3 d-flex justify-content-center ">
+                <button className="btn btn-primary" type="submit" data-pc-name="button" data-pc-section="root">ĐĂNG NHẬP</button>
+              </div>
+            </form>
+          </div>
+        </div>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    </div>
   )
 }
 

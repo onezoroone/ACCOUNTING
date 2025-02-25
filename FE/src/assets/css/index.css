@@ -1,0 +1,38 @@
+body {
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+}
+
+/* Login Page */
+.page-body-wrapper {
+    min-height: 100vh;
+    display: flex;
+    -webkit-box-orient: horizontal;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: row;
+    flex-direction: row;
+    padding-left: 0;
+    padding-right: 0;
+}
+.page-body-wrapper .content-wrapper{
+    background: #f2edf3;
+    padding: 2.75rem 2.25rem;
+    width: 100%;
+    -webkit-box-flex: 1;
+    -ms-flex-positive: 1;
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.page-body-wrapper .content-wrapper .body-content {
+    background-color: #fff;
+    border-radius: 1rem;
+    padding: 3rem;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
