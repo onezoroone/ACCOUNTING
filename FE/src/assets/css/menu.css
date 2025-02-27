@@ -275,3 +275,9 @@
     color: #686868;
     font-weight: 400;
 }
+@media (min-width: 768px) {
+    .horizontal-menu .bottom-navbar .page-navigation > .nav-item:hover > .nav-link svg, .horizontal-menu .bottom-navbar .page-navigation > .nav-item:hover > .nav-link .menu-title {
+        color: #0d6efd !important;
+        transition: color 1s ease;
+    }
+}
