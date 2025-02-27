@@ -1,7 +1,7 @@
 function App() {
 
   return (
-    <div className="page-body-wrapper">
+    <div className="page-login-wrapper">
       <div className="content-wrapper">
         <div className="mx-auto">
           <div className="body-content">
