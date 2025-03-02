@@ -1,7 +1,10 @@
 import { Link, useLocation } from "react-router-dom";
 import "../assets/css/menu.css";
+import { useState } from "react";
 function Navbar() {
     const location = useLocation();
+    const [showDropdown, setShowDropdown] = useState(false);
+
     return (  
         <div className="horizontal-menu">
             <header className="header top-navbar col-lg-12 col-12 p-0">
@@ -78,9 +81,52 @@ function Navbar() {
                                 <span className="menu-title">Dashboard</span>
                             </Link>
                         </li>
+                        <li 
+                            className="nav-item dropdown"
+                            onMouseEnter={() => setShowDropdown(true)}
+                            onMouseLeave={() => setShowDropdown(false)}
+                        >
+                            <a 
+                                className="nav-link d-flex align-items-center dropdown-toggle"
+                                role="button" 
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="menu-icon" viewBox="0 0 16 16">
+                                    <path d="M7.5 5.5a.5.5 0 0 0-1 0v.634l-.549-.317a.5.5 0 1 0-.5.866L6 7l-.549.317a.5.5 0 1 0 .5.866l.549-.317V8.5a.5.5 0 1 0 1 0v-.634l.549.317a.5.5 0 1 0 .5-.866L8 7l.549-.317a.5.5 0 1 0-.5-.866l-.549.317zm-2 4.5a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1zm0 2a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1z"/>
+                                    <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2M9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5z"/>
+                                </svg>
+                                <span className="menu-title">Chứng từ</span>
+                            </a>
+                            {showDropdown && (
+                                <ul className="dropdown-menu show">
+                                    <li className={`nav-item ${location.pathname === "/receipt" ? "active" : ""}`}>
+                                    <Link className="nav-link d-flex align-items-center" to="/receipt">
+                                        <span className="menu-title">Phiếu thu</span>
+                                    </Link>
+                                    </li>
+                                    <li className={`nav-item ${location.pathname === "/payment" ? "active" : ""}`}>
+                                    <Link className="nav-link d-flex align-items-center" to="/payment">
+                                        <span className="menu-title">Phiếu chi</span>
+                                    </Link>
+                                    </li>
+                                    <li className={`nav-item ${location.pathname === "/othervoucher" ? "active" : ""}`}>
+                                    <Link className="nav-link d-flex align-items-center" to="/othervoucher">
+                                        <span className="menu-title">Phiếu kế toán khác</span>
+                                    </Link>
+                                    </li>
+                                </ul>
+                            )}
+                        </li>
+                        <li className={`nav-item ${location.pathname === "/partnergroups" ? "active" : ""}`}>
+                            <Link className="nav-link d-flex align-items-center" to="/partnergroups">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="menu-icon" viewBox="0 0 16 16">
+                                    <path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6m-5.784 6A2.24 2.24 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.3 6.3 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1zM4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5"/>
+                                </svg>
+                                <span className="menu-title">Nhóm Đối tượng</span>
+                            </Link>
+                        </li>
                         <li className={`nav-item ${location.pathname === "/partners" ? "active" : ""}`}>
                             <Link className="nav-link d-flex align-items-center" to="/partners">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-people-fill menu-icon" viewBox="0 0 16 16">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="menu-icon" viewBox="0 0 16 16">
                                     <path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6m-5.784 6A2.24 2.24 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.3 6.3 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1zM4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5"/>
                                 </svg>
                                 <span className="menu-title">Đối tượng</span>
@@ -88,11 +134,37 @@ function Navbar() {
                         </li>
                         <li className={`nav-item ${location.pathname === "/accounts" ? "active" : ""}`}>
                             <Link className="nav-link d-flex align-items-center" to="/accounts">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-person-vcard menu-icon" viewBox="0 0 16 16">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="menu-icon" viewBox="0 0 16 16">
                                     <path d="M5 8a2 2 0 1 0 0-4 2 2 0 0 0 0 4m4-2.5a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1h-4a.5.5 0 0 1-.5-.5M9 8a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1h-4A.5.5 0 0 1 9 8m1 2.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5"/>
                                     <path d="M2 2a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2zM1 4a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H8.96q.04-.245.04-.5C9 10.567 7.21 9 5 9c-2.086 0-3.8 1.398-3.984 3.181A1 1 0 0 1 1 12z"/>
                                 </svg>
                                 <span className="menu-title">Tài khoản</span>
+                            </Link>
+                        </li>
+                        <li className={`nav-item ${location.pathname === "/currencies" ? "active" : ""}`}>
+                            <Link className="nav-link d-flex align-items-center" to="/currencies">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="menu-icon" viewBox="0 0 16 16">
+                                    <path d="M8 10a2 2 0 1 0 0-4 2 2 0 0 0 0 4"/>
+                                    <path d="M0 4a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H1a1 1 0 0 1-1-1zm3 0a2 2 0 0 1-2 2v4a2 2 0 0 1 2 2h10a2 2 0 0 1 2-2V6a2 2 0 0 1-2-2z"/>
+                                </svg>
+                                <span className="menu-title">Tiền Tệ</span>
+                            </Link>
+                        </li>
+                        <li className={`nav-item ${location.pathname === "/vouchers" ? "active" : ""}`}>
+                            <Link className="nav-link d-flex align-items-center" to="/vouchers">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="menu-icon" viewBox="0 0 16 16">
+                                    <path d="M14 4.5V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h6.5L14 4.5zM10 1.5V4h3L10 1.5zM5 5a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1H5zm0 2.5a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1H5zm0 2.5a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1H5z"/>
+                                </svg>
+                                <span className="menu-title">Quản lý chứng từ</span>
+                            </Link>
+                        </li>
+                        <li className={`nav-item ${location.pathname === "/reports" ? "active" : ""}`}>
+                            <Link className="nav-link d-flex align-items-center" to="/reports">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="menu-icon" viewBox="0 0 16 16">
+                                    <path d="M4 1.5A1.5 1.5 0 0 0 2.5 3V13A1.5 1.5 0 0 0 4 14.5H12A1.5 1.5 0 0 0 13.5 13V3A1.5 1.5 0 0 0 12 1.5H4zM4 0H12A3 3 0 0 1 15 3V13A3 3 0 0 1 12 16H4A3 3 0 0 1 1 13V3A3 3 0 0 1 4 0z"/>
+                                    <path d="M9.5 9.5a.5.5 0 0 0-1 0V11a.5.5 0 0 0 1 0V9.5zM7 8.5a.5.5 0 0 1 .5-.5h1A.5.5 0 0 1 9 8.5v3a.5.5 0 0 1-.5.5h-1A.5.5 0 0 1 7 11.5v-3zM5 7a.5.5 0 0 1 .5.5V9a.5.5 0 0 1-1 0V7.5A.5.5 0 0 1 5 7z"/>
+                                </svg>
+                                <span className="menu-title">Báo cáo</span>
                             </Link>
                         </li>
                     </ul>

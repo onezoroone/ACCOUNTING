@@ -1,9 +1,16 @@
 import { createBrowserRouter, Navigate } from "react-router-dom";
 import DefaultLayout from "./layouts/DefaultLayout";
 import App from "./App";
-import Dashboard from "./components/Dashboard";
+import DashboardPage from "./pages/DashboardPage";
 import AccountPage from "./pages/AccountPage";
-import PartnerGroupPage from "./pages/PartnerPage";
+import PartnerPage from "./pages/PartnerPage";
+import ReceiptVoucher from "./components/ReceiptVoucher";
+import PaymentVoucher from "./components/PaymentVoucher";
+import OtherVoucher from "./components/OtherVoucher";
+import CurrenciesForm from "./components/CurrenciesForm";
+import PartnerGroupPage from "./pages/PartnerGroupPage";
+import Voucher from "./components/VoucherForm";
+import Report from "./components/Report";
 
 const router = createBrowserRouter([
     {
@@ -12,7 +19,7 @@ const router = createBrowserRouter([
         children: [
             {
                 path: '/',
-                element: <Dashboard />
+                element: <DashboardPage />
             },
             {
                 path: '/accounts',
@@ -20,6 +27,34 @@ const router = createBrowserRouter([
             },
             {
                 path: '/partners',
+                element: <PartnerPage />
+            },
+            { 
+                path: "/receipt",
+                element: <ReceiptVoucher />
+            },
+            { 
+                path: "/payment",
+                element: <PaymentVoucher />
+            },
+            { 
+                path: "/othervoucher",
+                element: <OtherVoucher />
+            },
+            {
+                path: "/currencies",
+                element: <CurrenciesForm />
+            },
+            {
+                path: '/vouchers',
+                element: <Voucher />
+            },
+            {
+                path: '/reports',
+                element: <Report />
+            },
+            {
+                path: '/partnergroups',
                 element: <PartnerGroupPage />
             }
         ]
