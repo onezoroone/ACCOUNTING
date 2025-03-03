@@ -1,0 +1,12 @@
+.footer {
+    background: #f3f3f3;
+    padding: 30px 1rem;
+    transition: all 0.25sease;
+    -moz-transition: all 0.25s ease;
+    -webkit-transition: all 0.25sease;
+    -ms-transition: all 0.25s ease;
+    font-size: calc(0.875rem - 0.05rem);
+    font-family: "Roboto", sans-serif;
+    font-weight: 400;
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
+}

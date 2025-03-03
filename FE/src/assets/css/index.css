@@ -5,7 +5,7 @@ body {
 }
 
 /* Login Page */
-.page-body-wrapper {
+.page-login-wrapper {
     min-height: 100vh;
     display: flex;
     -webkit-box-orient: horizontal;
@@ -15,7 +15,7 @@ body {
     padding-left: 0;
     padding-right: 0;
 }
-.page-body-wrapper .content-wrapper{
+.page-login-wrapper .content-wrapper{
     background: #f2edf3;
     padding: 2.75rem 2.25rem;
     width: 100%;
@@ -27,7 +27,7 @@ body {
     align-items: center;
 }
 
-.page-body-wrapper .content-wrapper .body-content {
+.page-login-wrapper .content-wrapper .body-content {
     background-color: #fff;
     border-radius: 1rem;
     padding: 3rem;
@@ -35,4 +35,21 @@ body {
 
 .form-group {
     margin-bottom: 1.5rem;
+}
+.main-panel {
+    background: #f3f3f3;
+    width: 100%;
+}
+.content-wrapper {
+    padding: 2rem 0;
+    --bs-gutter-x: 1.5rem;
+    --bs-gutter-y: 0;
+    width: 100%;
+    padding-right: calc(var(--bs-gutter-x)* 0.5);
+    padding-left: calc(var(--bs-gutter-x)* 0.5);
+    margin-right: auto;
+    margin-left: auto;
+    min-height: calc(100vh - 135px - 75px);
+    -webkit-flex-grow: 1;
+    flex-grow: 1;
 }
