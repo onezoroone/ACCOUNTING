@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { Container, Row, Col } from "react-bootstrap";
-import PartnerList from "../components/PartnerList";
-import PartnersModal from "../components/PartnersModal";
+import PartnerGroupList from "../components/PartnerGroupList";
+import PartnerGroupForm from "../components/PartnerGroupForm";
 
-const PartnerPage = ()=> {
+const PartnerGroupPage = ()=> {
 
   const [data, setData] = useState([]);
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -40,12 +40,12 @@ const PartnerPage = ()=> {
 
       <Row className="table-container">
         <Col xs={12} className="table-responsive">
-          <PartnerList data={data} onEdit={handleEdit} onDelete={handleDelete} onAdd={handleAdd} />
+          <PartnerGroupList data={data} onEdit={handleEdit} onDelete={handleDelete} onAdd={handleAdd} />
         </Col>
       </Row>
 
       {isFormOpen && (
-        <PartnersModal
+        <PartnerGroupForm
           onSubmit={handleSubmit}
           onClose={() => setIsFormOpen(false)}
           initialData={editIndex !== null ? data[editIndex] : null}
@@ -55,4 +55,4 @@ const PartnerPage = ()=> {
   );
 };
 
-export default PartnerPage;
+export default PartnerGroupPage;

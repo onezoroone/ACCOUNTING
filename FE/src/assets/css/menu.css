@@ -110,10 +110,10 @@
     background: #ececec;
 }
 .input-group-text, .navbar-menu-wrapper .navbar-nav .nav-item.nav-search .input-group .form-control{
-    background: transparent;
-    border: 0;
-    color: #979797;
-    padding: 0;
+    background: transparent !important;
+    border: 0 !important;
+    color: #979797 !important;
+    padding: 0 !important;
 }
 
 .navbar-menu-wrapper .navbar-nav .nav-item.nav-search .input-group .form-control{

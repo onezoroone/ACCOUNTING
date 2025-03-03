@@ -1,10 +1,46 @@
-import React from "react";
+import { useState } from "react";
 import { Table, Button } from "react-bootstrap";
+import PartnersModal from "./PartnersModal";
 
-const PartnerList = ({ data, onEdit, onDelete, onAdd }) => {
+const PartnerList = ({ data, setData }) => {
+  const [isModalOpen, setModalOpen] = useState(false);
+  const [selectedEntity, setSelectedEntity] = useState(null);
+  const [editIndex, setEditIndex] = useState(null);
+
+  const handleAdd = () => {
+    setSelectedEntity(null);
+    setEditIndex(null);
+    setModalOpen(true);
+  };
+
+  const handleEdit = (index) => {
+    setSelectedEntity(data[index]);
+    setEditIndex(index);
+    setModalOpen(true);
+  };
+
+  const handleDelete = (index) => {
+    if (window.confirm("Bạn có chắc chắn muốn xóa đối tượng này không?")) {
+      const newData = [...data];
+      newData.splice(index, 1);
+      setData(newData);
+    }
+  };
+
+  const handleSave = (entity) => {
+    if (editIndex !== null) {
+      const updatedData = [...data];
+      updatedData[editIndex] = entity;
+      setData(updatedData);
+    } else {
+      setData([...data, entity]);
+    }
+    setModalOpen(false);
+  };
+
   return (
     <div className="table-responsive">
-      <h2 className="text-center mb-3">Danh sách Tài Khoản</h2>
+      <h2 className="text-center mb-3">Danh sách Đối tượng</h2>
       <Table striped bordered hover responsive className="w-100">
         <thead className="table-primary">
           <tr>
@@ -15,33 +51,36 @@ const PartnerList = ({ data, onEdit, onDelete, onAdd }) => {
             <th>Địa chỉ</th>
             <th>Số điện thoại</th>
             <th>Email</th>
-            <th></th>
-            <th></th>
+            <th>Hành động</th>
           </tr>
         </thead>
         <tbody>
           {data.map((item, index) => (
             <tr key={index}>
               <td>{index + 1}</td>
-              <td>{item.taxCode}</td>
-              <td>{item.objectCode}</td>
-              <td>{item.objectName}</td>
+              <td>{item.tax_code}</td>
+              <td>{item.entity_code}</td>
+              <td>{item.entity_name}</td>
               <td>{item.address}</td>
-              <td>{item.phone}</td>
+              <td>{item.phone_number}</td>
               <td>{item.email}</td>
               <td>
-                <Button variant="" size="sm" onClick={() => onEdit(index)}>✏️</Button>
-              </td>
-              <td>
-                <Button variant="" size="sm" onClick={() => onDelete(index)}>🗑️</Button>
+                <Button variant="warning" size="sm" onClick={() => handleEdit(index)}>✏️</Button>{' '}
+                <Button variant="danger" size="sm" onClick={() => handleDelete(index)}>🗑️</Button>
               </td>
             </tr>
           ))}
         </tbody>
       </Table>
-      <div className="d-flex justify-content-start ">
-        <Button variant="primary" onClick={onAdd}>Thêm mới</Button>
-      </div>
+      <Button variant="primary" onClick={handleAdd}>Thêm mới</Button>
+
+      {/* Modal */}
+      <PartnersModal 
+        isOpen={isModalOpen} 
+        onClose={() => setModalOpen(false)} 
+        onSave={handleSave} 
+        initialData={selectedEntity} 
+      />
     </div>
   );
 };

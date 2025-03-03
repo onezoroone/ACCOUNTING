@@ -1,7 +1,11 @@
 import { Link, useLocation } from "react-router-dom";
 import "../assets/css/menu.css";
+import { useState } from "react";
 function Navbar() {
     const location = useLocation();
+    const [showDropdownVoucher, setShowDropdownVoucher] = useState(false);
+    const [showDropdownReport, setShowDropdownReport] = useState(false);
+    
     return (  
         <div className="horizontal-menu">
             <header className="header top-navbar col-lg-12 col-12 p-0">
@@ -78,9 +82,17 @@ function Navbar() {
                                 <span className="menu-title">Dashboard</span>
                             </Link>
                         </li>
+                        <li className={`nav-item ${location.pathname === "/partnergroups" ? "active" : ""}`}>
+                            <Link className="nav-link d-flex align-items-center" to="/partnergroups">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="menu-icon" viewBox="0 0 16 16">
+                                    <path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6m-5.784 6A2.24 2.24 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.3 6.3 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1zM4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5"/>
+                                </svg>
+                                <span className="menu-title">Nhóm Đối tượng</span>
+                            </Link>
+                        </li>
                         <li className={`nav-item ${location.pathname === "/partners" ? "active" : ""}`}>
                             <Link className="nav-link d-flex align-items-center" to="/partners">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-people-fill menu-icon" viewBox="0 0 16 16">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="menu-icon" viewBox="0 0 16 16">
                                     <path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6m-5.784 6A2.24 2.24 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.3 6.3 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1zM4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5"/>
                                 </svg>
                                 <span className="menu-title">Đối tượng</span>
@@ -88,11 +100,67 @@ function Navbar() {
                         </li>
                         <li className={`nav-item ${location.pathname === "/accounts" ? "active" : ""}`}>
                             <Link className="nav-link d-flex align-items-center" to="/accounts">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-person-vcard menu-icon" viewBox="0 0 16 16">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="menu-icon" viewBox="0 0 16 16">
                                     <path d="M5 8a2 2 0 1 0 0-4 2 2 0 0 0 0 4m4-2.5a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1h-4a.5.5 0 0 1-.5-.5M9 8a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1h-4A.5.5 0 0 1 9 8m1 2.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5"/>
                                     <path d="M2 2a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2zM1 4a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H8.96q.04-.245.04-.5C9 10.567 7.21 9 5 9c-2.086 0-3.8 1.398-3.984 3.181A1 1 0 0 1 1 12z"/>
                                 </svg>
                                 <span className="menu-title">Tài khoản</span>
+                            </Link>
+                        </li>
+                        <li className={`nav-item ${location.pathname === "/currencies" ? "active" : ""}`}>
+                            <Link className="nav-link d-flex align-items-center" to="/currencies">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="menu-icon" viewBox="0 0 16 16">
+                                    <path d="M8 10a2 2 0 1 0 0-4 2 2 0 0 0 0 4"/>
+                                    <path d="M0 4a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H1a1 1 0 0 1-1-1zm3 0a2 2 0 0 1-2 2v4a2 2 0 0 1 2 2h10a2 2 0 0 1 2-2V6a2 2 0 0 1-2-2z"/>
+                                </svg>
+                                <span className="menu-title">Tiền Tệ</span>
+                            </Link>
+                        </li>
+                        <li className={`nav-item ${location.pathname === "/vouchers" ? "active" : ""}`}>
+                            <Link className="nav-link d-flex align-items-center" to="/vouchers">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="menu-icon" viewBox="0 0 16 16">
+                                    <path d="M14 4.5V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h6.5L14 4.5zM10 1.5V4h3L10 1.5zM5 5a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1H5zm0 2.5a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1H5zm0 2.5a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1H5z"/>
+                                </svg>
+                                <span className="menu-title">Quản lý chứng từ</span>
+                            </Link>
+                        </li>
+                        <li 
+                            className="nav-item dropdown"
+                            onMouseEnter={() => setShowDropdownReport(true)}
+                            onMouseLeave={() => setShowDropdownReport(false)}
+                        >
+                            <a 
+                                className="nav-link d-flex align-items-center dropdown-toggle"
+                                role="button" 
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="menu-icon" viewBox="0 0 16 16">
+                                    <path d="M6 1a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v1h1a1 1 0 0 1 1 1v2H3V3a1 1 0 0 1 1-1h1V1z"/>
+                                    <path d="M3 5h10v8a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V5z"/>
+                                </svg>
+                                <span className="menu-title">Báo cáo</span>
+                            </a>
+                            {showDropdownReport && (
+                                <ul className="dropdown-menu show">
+                                    <li className={`nav-item ${location.pathname === "/accountdetailreports" ? "active" : ""}`}>
+                                        <Link className="nav-link d-flex align-items-center" to="/accountdetailreports">
+                                            <span className="menu-title">Báo cáo chi tiết tài khoản</span>
+                                        </Link>
+                                    </li>
+                                    <li className={`nav-item ${location.pathname === "/balancereports" ? "active" : ""}`}>
+                                        <Link className="nav-link d-flex align-items-center" to="/balancereports">
+                                            <span className="menu-title">Bảng cân đối phát sinh</span>
+                                        </Link>
+                                    </li>
+                                </ul>
+                            )}
+                        </li>
+                        <li className={`nav-item ${location.pathname === "/users" ? "active" : ""}`}>
+                            <Link className="nav-link d-flex align-items-center" to="/users">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="menu-icon" viewBox="0 0 16 16">
+                                    <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>
+                                    <path fillRule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1"/>
+                                </svg>
+                                <span className="menu-title">Người dùng</span>
                             </Link>
                         </li>
                     </ul>
