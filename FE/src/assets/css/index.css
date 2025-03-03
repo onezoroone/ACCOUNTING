@@ -53,3 +53,29 @@ body {
     -webkit-flex-grow: 1;
     flex-grow: 1;
 }
+.text-small {
+    font-size: 10px;
+}
+.icon-wrap {
+    width: 46px;
+    height: 46px;
+    border-radius: 13px;
+    color: #ffffff;
+    text-align: center;
+    padding-top: 10px;
+}
+.stretch-card {
+    display: -webkit-flex;
+    display: flex;
+    -webkit-align-items: stretch;
+    align-items: stretch;
+    -webkit-justify-content: stretch;
+    justify-content: stretch;
+}
+.grid-margin {
+    margin-bottom: 1.875rem;
+}
+.stretch-card > .card {
+    width: 100%;
+    min-width: 100%;
+}

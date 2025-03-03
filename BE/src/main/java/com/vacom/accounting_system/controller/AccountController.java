@@ -39,17 +39,13 @@ public class AccountController {
         return accountService.getAccountByCode(accountCode);
     }
 
-    // Lấy tài khoản theo parent_id
-    @GetMapping("/parent/{parentId}")
-    public List<Account> getAccountsByParentId(@PathVariable Integer parentId) {
-        return accountService.getAccountsByParentId(parentId);
-    }
 
     // Cập nhật tài khoản
     @PutMapping("/{id}")
     public Account updateAccount(@PathVariable Integer id, @RequestBody Account accountDetails) {
         return accountService.updateAccount(id, accountDetails);
     }
+
 
     // Xóa tài khoản
     @DeleteMapping("/{id}")
