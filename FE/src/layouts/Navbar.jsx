@@ -3,8 +3,9 @@ import "../assets/css/menu.css";
 import { useState } from "react";
 function Navbar() {
     const location = useLocation();
-    const [showDropdown, setShowDropdown] = useState(false);
-
+    const [showDropdownVoucher, setShowDropdownVoucher] = useState(false);
+    const [showDropdownReport, setShowDropdownReport] = useState(false);
+    
     return (  
         <div className="horizontal-menu">
             <header className="header top-navbar col-lg-12 col-12 p-0">
@@ -81,41 +82,6 @@ function Navbar() {
                                 <span className="menu-title">Dashboard</span>
                             </Link>
                         </li>
-                        <li 
-                            className="nav-item dropdown"
-                            onMouseEnter={() => setShowDropdown(true)}
-                            onMouseLeave={() => setShowDropdown(false)}
-                        >
-                            <a 
-                                className="nav-link d-flex align-items-center dropdown-toggle"
-                                role="button" 
-                            >
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="menu-icon" viewBox="0 0 16 16">
-                                    <path d="M7.5 5.5a.5.5 0 0 0-1 0v.634l-.549-.317a.5.5 0 1 0-.5.866L6 7l-.549.317a.5.5 0 1 0 .5.866l.549-.317V8.5a.5.5 0 1 0 1 0v-.634l.549.317a.5.5 0 1 0 .5-.866L8 7l.549-.317a.5.5 0 1 0-.5-.866l-.549.317zm-2 4.5a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1zm0 2a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1z"/>
-                                    <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2M9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5z"/>
-                                </svg>
-                                <span className="menu-title">Chứng từ</span>
-                            </a>
-                            {showDropdown && (
-                                <ul className="dropdown-menu show">
-                                    <li className={`nav-item ${location.pathname === "/receipt" ? "active" : ""}`}>
-                                    <Link className="nav-link d-flex align-items-center" to="/receipt">
-                                        <span className="menu-title">Phiếu thu</span>
-                                    </Link>
-                                    </li>
-                                    <li className={`nav-item ${location.pathname === "/payment" ? "active" : ""}`}>
-                                    <Link className="nav-link d-flex align-items-center" to="/payment">
-                                        <span className="menu-title">Phiếu chi</span>
-                                    </Link>
-                                    </li>
-                                    <li className={`nav-item ${location.pathname === "/othervoucher" ? "active" : ""}`}>
-                                    <Link className="nav-link d-flex align-items-center" to="/othervoucher">
-                                        <span className="menu-title">Phiếu kế toán khác</span>
-                                    </Link>
-                                    </li>
-                                </ul>
-                            )}
-                        </li>
                         <li className={`nav-item ${location.pathname === "/partnergroups" ? "active" : ""}`}>
                             <Link className="nav-link d-flex align-items-center" to="/partnergroups">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="menu-icon" viewBox="0 0 16 16">
@@ -158,14 +124,35 @@ function Navbar() {
                                 <span className="menu-title">Quản lý chứng từ</span>
                             </Link>
                         </li>
-                        <li className={`nav-item ${location.pathname === "/reports" ? "active" : ""}`}>
-                            <Link className="nav-link d-flex align-items-center" to="/reports">
+                        <li 
+                            className="nav-item dropdown"
+                            onMouseEnter={() => setShowDropdownReport(true)}
+                            onMouseLeave={() => setShowDropdownReport(false)}
+                        >
+                            <a 
+                                className="nav-link d-flex align-items-center dropdown-toggle"
+                                role="button" 
+                            >
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="menu-icon" viewBox="0 0 16 16">
-                                    <path d="M4 1.5A1.5 1.5 0 0 0 2.5 3V13A1.5 1.5 0 0 0 4 14.5H12A1.5 1.5 0 0 0 13.5 13V3A1.5 1.5 0 0 0 12 1.5H4zM4 0H12A3 3 0 0 1 15 3V13A3 3 0 0 1 12 16H4A3 3 0 0 1 1 13V3A3 3 0 0 1 4 0z"/>
-                                    <path d="M9.5 9.5a.5.5 0 0 0-1 0V11a.5.5 0 0 0 1 0V9.5zM7 8.5a.5.5 0 0 1 .5-.5h1A.5.5 0 0 1 9 8.5v3a.5.5 0 0 1-.5.5h-1A.5.5 0 0 1 7 11.5v-3zM5 7a.5.5 0 0 1 .5.5V9a.5.5 0 0 1-1 0V7.5A.5.5 0 0 1 5 7z"/>
+                                    <path d="M6 1a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v1h1a1 1 0 0 1 1 1v2H3V3a1 1 0 0 1 1-1h1V1z"/>
+                                    <path d="M3 5h10v8a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V5z"/>
                                 </svg>
                                 <span className="menu-title">Báo cáo</span>
-                            </Link>
+                            </a>
+                            {showDropdownReport && (
+                                <ul className="dropdown-menu show">
+                                    <li className={`nav-item ${location.pathname === "/accountdetailreports" ? "active" : ""}`}>
+                                        <Link className="nav-link d-flex align-items-center" to="/accountdetailreports">
+                                            <span className="menu-title">Báo cáo chi tiết tài khoản</span>
+                                        </Link>
+                                    </li>
+                                    <li className={`nav-item ${location.pathname === "/balancereports" ? "active" : ""}`}>
+                                        <Link className="nav-link d-flex align-items-center" to="/balancereports">
+                                            <span className="menu-title">Bảng cân đối phát sinh</span>
+                                        </Link>
+                                    </li>
+                                </ul>
+                            )}
                         </li>
                         <li className={`nav-item ${location.pathname === "/users" ? "active" : ""}`}>
                             <Link className="nav-link d-flex align-items-center" to="/users">

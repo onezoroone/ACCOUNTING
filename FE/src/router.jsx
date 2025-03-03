@@ -9,8 +9,9 @@ import PaymentVoucher from "./components/PaymentVoucher";
 import OtherVoucher from "./components/OtherVoucher";
 import CurrenciesForm from "./components/CurrenciesForm";
 import PartnerGroupPage from "./pages/PartnerGroupPage";
-import Voucher from "./components/VoucherForm";
-import Report from "./components/Report";
+import VoucherManagementForm from "./components/VoucherManagementForm";
+import AccountDetailReport from "./components/AccountDetailReport";
+import BalanceReport from "./components/BalanceReport";
 import UserPage from "./pages/UserPage";
 
 const router = createBrowserRouter([
@@ -48,11 +49,15 @@ const router = createBrowserRouter([
             },
             {
                 path: '/vouchers',
-                element: <Voucher />
+                element: <VoucherManagementForm />
             },
             {
-                path: '/reports',
-                element: <Report />
+                path: '/accountdetailreports',
+                element: <AccountDetailReport />
+            },
+            {
+                path: '/balancereports',
+                element: <BalanceReport />
             },
             {
                 path: '/partnergroups',

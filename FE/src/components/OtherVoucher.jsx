@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { Table, Button, Form } from "react-bootstrap";
 import PartnersModal from "./PartnersModal";
+import { Link } from "react-router-dom"; 
+
 
 const OtherVoucher = () => {
   const [entries, setEntries] = useState([
@@ -124,7 +126,9 @@ const OtherVoucher = () => {
       <div className="text-end mt-3">
         <Button className="bg-success-subtle text-dark border-success-subtle me-2">Lưu</Button>
         <Button className="bg-warning-subtle text-dark me-2 border-warning-subtle">Lưu và In</Button>
-        <Button variant="secondary">Đóng</Button>
+        <Link to="/vouchers">
+          <Button variant="secondary">Đóng</Button>
+        </Link>
       </div>
     </div>
   );

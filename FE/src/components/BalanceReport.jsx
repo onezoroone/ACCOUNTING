@@ -12,7 +12,6 @@ import { FaSearch, FaSyncAlt } from "react-icons/fa";
 
 const ReportPage = () => {
   const [selectedTimeFilter, setSelectedTimeFilter] = useState("Chọn thời gian");
-  const [selectedTypeFilter, setSelectedTypeFilter] = useState("Chọn loại phiếu");
 
   return (
     <Container fluid className="p-3">
@@ -20,7 +19,7 @@ const ReportPage = () => {
       <Row className="mt-1 py-1 px-2 d-flex justify-content-end align-items-center">
         <Col xs="auto">
           <div className="d-flex align-items-center">
-            {/* Ô tìm kiếm có icon */}
+            {/* Ô tìm kiếm */}
             <div className="input-group">
               <span className="input-group-text bg-light border-0">
                 <FaSearch className="text-secondary" />
@@ -50,9 +49,9 @@ const ReportPage = () => {
       </Row>
 
       {/* Thanh tiêu đề */}
-      <Row className="bg-light p-3 align-items-center">
+      <Row className="bg-info bg-opacity-50 p-3 align-items-center">
         <Col md={6}>
-          <h5 className="m-0 fw-bold">Báo cáo sổ cái</h5>
+          <h5 className="m-0 fw-bold text-dark">Báo cáo sổ cân đối phát sinh</h5>
         </Col>
         <Col md={6} className="text-end">
           {/* Dropdown chọn tham số */}
@@ -67,25 +66,13 @@ const ReportPage = () => {
             <Dropdown.Item eventKey="Lọc theo tháng">Lọc theo tháng</Dropdown.Item>
             <Dropdown.Item eventKey="Lọc theo năm">Lọc theo năm</Dropdown.Item>
           </DropdownButton>
-
-          <DropdownButton
-            id="dropdown-type-filter"
-            title={selectedTypeFilter}
-            onSelect={(eventKey) => setSelectedTypeFilter(eventKey)}
-            variant="secondary"
-            className="d-inline-block"
-          >
-            <Dropdown.Item eventKey="Phiếu thu">Phiếu thu</Dropdown.Item>
-            <Dropdown.Item eventKey="Phiếu chi">Phiếu chi</Dropdown.Item>
-            <Dropdown.Item eventKey="Hạch toán khác">Hạch toán khác</Dropdown.Item>
-          </DropdownButton>
         </Col>
       </Row>
 
       {/* Phần thông tin tham số */}
-      <Row className="mt-1 p-3 bg-primary text-white fw-bold">
+      <Row className="mt-1 p-3" style={{ color: 'black' }}>
         <Col>
-          Thông tin tham số: {selectedTimeFilter !== "Chọn thời gian" ? selectedTimeFilter : "Chưa chọn thời gian"} - {selectedTypeFilter !== "Chọn loại phiếu" ? selectedTypeFilter : "Chưa chọn loại phiếu"}
+          Thông tin tham số: {selectedTimeFilter !== "Chọn thời gian" ? selectedTimeFilter : "Chưa chọn thời gian"}
         </Col>
       </Row>
 
@@ -96,12 +83,12 @@ const ReportPage = () => {
             <thead className="table-primary bg-primary text-white">
               <tr>
                 <th>#</th>
-                <th>Ngày tháng</th>
-                <th>Mã chứng từ</th>
-                <th>Diễn giải</th>
-                <th>Số tiền nợ</th>
-                <th>Số tiền có</th>
-                <th>Số dư</th>
+                <th>Mã tài khoản</th>
+                <th>Tên tài khoản</th>
+                <th>Số dư đầu kỳ</th>
+                <th>TK nợ</th>
+                <th>TK có </th>
+                <th>Số dư cuối kỳ</th>
               </tr>
             </thead>
           </Table>
