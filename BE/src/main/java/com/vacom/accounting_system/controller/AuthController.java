@@ -10,7 +10,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -22,7 +25,20 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> authenticate(@Valid @RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<AuthResponse> authenticate(@Valid @RequestBody LoginRequest loginRequest, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            String errorMessage = bindingResult.getFieldErrors().stream()
+                    .map(error -> error.getField() + ": " + error.getDefaultMessage())
+                    .collect(Collectors.joining("; "));
+            log.warn("Validation failed for authentication: {}", errorMessage);
+            return ResponseEntity.status(401).body(
+                    AuthResponse.builder()
+                            .authenticated(false)
+                            .errorMessage(errorMessage)
+                            .build()
+            );
+        }
+
         try {
             AuthResponse response = authService.authenticate(loginRequest);
             if (response.isAuthenticated()) {
@@ -37,14 +53,27 @@ public class AuthController {
             return ResponseEntity.status(401).body(
                     AuthResponse.builder()
                             .authenticated(false)
-                            .token(null)
+                            .errorMessage("Invalid request: " + e.getMessage())
                             .build()
             );
         }
     }
 
     @PostMapping("/register")
-    public ResponseEntity<AuthResponse> registerUser(@Valid @RequestBody RegisterRequest registerRequest) {
+    public ResponseEntity<AuthResponse> registerUser(@Valid @RequestBody RegisterRequest registerRequest, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            String errorMessage = bindingResult.getFieldErrors().stream()
+                    .map(error -> error.getField() + ": " + error.getDefaultMessage())
+                    .collect(Collectors.joining("; "));
+            log.warn("Validation failed for registration: {}", errorMessage);
+            return ResponseEntity.status(400).body(
+                    AuthResponse.builder()
+                            .authenticated(false)
+                            .errorMessage(errorMessage)
+                            .build()
+            );
+        }
+
         try {
             AuthResponse response = authService.registerUser(registerRequest);
             if (response.isAuthenticated()) {
@@ -59,7 +88,7 @@ public class AuthController {
             return ResponseEntity.status(400).body(
                     AuthResponse.builder()
                             .authenticated(false)
-                            .token(null)
+                            .errorMessage("Invalid request: " + e.getMessage())
                             .build()
             );
         }
@@ -67,9 +96,8 @@ public class AuthController {
 
     @PostMapping("/logout")
     public ResponseEntity<AuthResponse> invalidateSession(@RequestHeader(value = "Authorization", required = false) String authorizationHeader) {
-        String token = null;
         try {
-            token = extractTokenFromHeader(authorizationHeader);
+            String token = extractTokenFromHeader(authorizationHeader);
             if (token == null || token.isEmpty()) {
                 log.warn("No valid Authorization header provided for logout");
                 return ResponseEntity.badRequest().body(
@@ -89,7 +117,7 @@ public class AuthController {
                 return ResponseEntity.badRequest().body(response);
             }
         } catch (Exception e) {
-            log.error("Logout error for token: {}", token, e);
+            log.error("Logout error for token", e);
             return ResponseEntity.badRequest().body(
                     AuthResponse.builder()
                             .authenticated(false)

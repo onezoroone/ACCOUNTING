@@ -9,6 +9,7 @@ import com.vacom.accounting_system.dto.request.RegisterRequest;
 import com.vacom.accounting_system.dto.response.AuthResponse;
 import com.vacom.accounting_system.entity.Role;
 import com.vacom.accounting_system.entity.User;
+import com.vacom.accounting_system.exception.RoleNotFoundException;
 import com.vacom.accounting_system.repository.RoleRepository;
 import com.vacom.accounting_system.repository.UserRepository;
 import lombok.AccessLevel;
@@ -71,6 +72,39 @@ public class AuthService {
 
     @Transactional
     public AuthResponse registerUser(RegisterRequest registerRequest) {
+        if (registerRequest.getUsername() == null || registerRequest.getUsername().trim().isEmpty()) {
+            log.warn("Username is missing or empty");
+            return AuthResponse.builder()
+                    .authenticated(false)
+                    .errorMessage("Username is required")
+                    .build();
+        }
+
+        if (registerRequest.getPassword() == null || registerRequest.getPassword().trim().isEmpty()) {
+            log.warn("Password is missing or empty");
+            return AuthResponse.builder()
+                    .authenticated(false)
+                    .errorMessage("Password is required")
+                    .build();
+        }
+
+        if (registerRequest.getFullname() == null || registerRequest.getFullname().trim().isEmpty()) {
+            log.warn("Full name is missing or empty");
+            return AuthResponse.builder()
+                    .authenticated(false)
+                    .errorMessage("Full name is required")
+                    .build();
+        }
+
+        if (registerRequest.getEmail() == null || registerRequest.getEmail().trim().isEmpty()) {
+            log.warn("Email is missing or empty");
+            return AuthResponse.builder()
+                    .authenticated(false)
+                    .errorMessage("Email is required")
+                    .build();
+        }
+
+        // Kiểm tra username có tồn tại không
         if (userRepository.existsByUsername(registerRequest.getUsername())) {
             log.warn("Username {} already exists", registerRequest.getUsername());
             return AuthResponse.builder()
@@ -79,15 +113,34 @@ public class AuthService {
                     .build();
         }
 
+        // Kiểm tra email có tồn tại không
+        if (userRepository.existsByEmail(registerRequest.getEmail())) {
+            log.warn("Email {} already exists", registerRequest.getEmail());
+            return AuthResponse.builder()
+                    .authenticated(false)
+                    .errorMessage("Email already exists")
+                    .build();
+        }
+
         User user = User.builder()
-                .username(registerRequest.getUsername())
+                .username(registerRequest.getUsername().trim())
                 .passwordHash(passwordEncoder.encode(registerRequest.getPassword()))
-                .fullName(registerRequest.getFullname())
-                .email(registerRequest.getEmail())
+                .fullName(registerRequest.getFullname().trim())
+                .email(registerRequest.getEmail().trim())
                 .build();
 
-        Role userRole = roleRepository.findByRoleName("ROLE_USER")
-                .orElseThrow(() -> new RuntimeException("Default role ROLE_USER not found"));
+        Role userRole;
+        try {
+            userRole = roleRepository.findByRoleName("USER")
+                    .orElseThrow(() -> new RoleNotFoundException("Default role USER not found"));
+        } catch (RoleNotFoundException e) {
+            log.error("Failed to find default role USER: {}", e.getMessage());
+            return AuthResponse.builder()
+                    .authenticated(false)
+                    .errorMessage(e.getMessage())
+                    .build();
+        }
+
         Set<Role> roles = new HashSet<>();
         roles.add(userRole);
         user.setRoles(roles);
@@ -95,10 +148,9 @@ public class AuthService {
         userRepository.save(user);
         log.info("User {} registered successfully", registerRequest.getUsername());
 
-        String token = generateJwtToken(registerRequest.getUsername());
         return AuthResponse.builder()
                 .authenticated(true)
-                .token(token)
+                .token(null)
                 .username(registerRequest.getUsername())
                 .message("Registered successfully")
                 .build();

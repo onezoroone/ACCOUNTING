@@ -1,14 +1,21 @@
 package com.vacom.accounting_system.dto.request;
 
-import lombok.AccessLevel;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Email;
 import lombok.Data;
-import lombok.experimental.FieldDefaults;
 
 @Data
-@FieldDefaults(level = AccessLevel.PRIVATE)
 public class RegisterRequest {
-    String username;
-    String password;
-    String fullname;
-    String email;
+    @NotBlank(message = "Username is required")
+    private String username;
+
+    @NotBlank(message = "Password is required")
+    private String password;
+
+    @NotBlank(message = "Full name is required")
+    private String fullname;
+
+    @NotBlank(message = "Email is required")
+    @Email(message = "Invalid email format")
+    private String email;
 }

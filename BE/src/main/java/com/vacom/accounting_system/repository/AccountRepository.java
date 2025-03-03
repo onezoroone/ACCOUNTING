@@ -3,5 +3,11 @@ package com.vacom.accounting_system.repository;
 import com.vacom.accounting_system.entity.Account;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface AccountRepository extends JpaRepository<Account, Integer> {
+import java.util.List;
+import java.util.Optional;
+
+public interface AccountRepository extends JpaRepository<Account, Long> {
+    Optional<Account> findByAccountCode(String accountCode);
+    boolean existsByAccountCode(String accountCode);
+    List<Account> findAllByAccountCodeIn(List<String> accountCodes);
 }

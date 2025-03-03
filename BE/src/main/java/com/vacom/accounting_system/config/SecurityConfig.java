@@ -11,6 +11,7 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -34,7 +35,7 @@ public class SecurityConfig {
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/api/auth/**", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+                        .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/accounts").hasAnyAuthority("VIEW_ACCOUNT")
                         .requestMatchers(HttpMethod.POST, "/api/accounts").hasAnyAuthority("CREATE_ACCOUNT")
                         .requestMatchers(HttpMethod.PUT, "/api/accounts/**").hasAnyAuthority("EDIT_ACCOUNT")
@@ -47,11 +48,12 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/partners").hasAnyAuthority("CREATE_PARTNER")
                         .requestMatchers(HttpMethod.GET, "/api/users").hasAnyAuthority("VIEW_USER")
                         .requestMatchers(HttpMethod.POST, "/api/users").hasAnyAuthority("CREATE_USER")
+                        .requestMatchers("/api/account-ledger/report/**").hasAnyAuthority("VIEW_ACCOUNT_LEDGER")
                         .requestMatchers("/api/roles/**").hasAnyAuthority("MANAGE_ROLES")
                         .requestMatchers("/api/permissions/**").hasAnyAuthority("MANAGE_PERMISSIONS")
                         .anyRequest().authenticated()
                 )
-                .csrf(csrf -> csrf.disable())
+                .csrf(AbstractHttpConfigurer::disable)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
