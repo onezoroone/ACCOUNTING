@@ -11,6 +11,7 @@ import CurrenciesForm from "./components/CurrenciesForm";
 import PartnerGroupPage from "./pages/PartnerGroupPage";
 import Voucher from "./components/VoucherForm";
 import Report from "./components/Report";
+import UserPage from "./pages/UserPage";
 
 const router = createBrowserRouter([
     {
@@ -56,6 +57,10 @@ const router = createBrowserRouter([
             {
                 path: '/partnergroups',
                 element: <PartnerGroupPage />
+            },
+            {
+                path: '/users',
+                element: <UserPage />
             }
         ]
     },{
