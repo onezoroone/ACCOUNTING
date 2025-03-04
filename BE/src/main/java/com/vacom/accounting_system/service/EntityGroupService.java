@@ -1,6 +1,6 @@
 package com.vacom.accounting_system.service;
 
-import com.vacom.accounting_system.model.Partner;
+import com.vacom.accounting_system.entity.Partner;
 import com.vacom.accounting_system.repository.PartnerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

@@ -1,7 +1,7 @@
 package com.vacom.accounting_system.controller;
 
 import com.vacom.accounting_system.model.Partner;
-import com.vacom.accounting_system.service.PartnerService;
+import com.vacom.accounting_system.service.EntityGroupService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,7 +13,7 @@ import java.util.List;
 public class PartnerController {
 
     @Autowired
-    private PartnerService partnerService;
+    private EntityGroupService partnerService;
 
     // Create
     @PostMapping

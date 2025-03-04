@@ -1,10 +1,10 @@
-package com.vacom.accounting_system.model;
+package com.vacom.accounting_system.entity;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "entities")
-public class EntityModel {
+public class Entity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
