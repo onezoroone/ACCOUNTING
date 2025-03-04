@@ -1,11 +1,16 @@
 package com.vacom.accounting_system.model;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
-@Table(name = "expense_vouchers")
+@Table(name = "vouchers")
+@Getter
+@Setter
 public class ExpenseVoucherModel {
 
     @Id
@@ -15,98 +20,36 @@ public class ExpenseVoucherModel {
     @Column(name = "voucher_number", nullable = false, unique = true)
     private String voucherNumber;
 
+    @Column(name = "voucher_type", nullable = false)
+    private String voucherType;
+
     @Column(name = "voucher_date", nullable = false)
     private LocalDate voucherDate;
 
     @Column(name = "description")
     private String description;
 
-    @Column(name = "total_amount", nullable = false, precision = 15, scale = 2)
+    @Column(name = "total_amount", nullable = false)
     private BigDecimal totalAmount;
 
-    @Column(name = "paid_to", nullable = false)
-    private String paidTo;
+    @Column(name = "currency_id", nullable = false)
+    private Integer currencyId;
 
-    @Column(name = "payment_method", nullable = false)
-    private String paymentMethod;
+    @Column(name = "exchange_rate", nullable = false)
+    private BigDecimal exchangeRate;
+
+    @Column(name = "total_amount_origin", nullable = false)
+    private BigDecimal totalAmountOrigin;
+
+    @Column(name = "entity_code")
+    private String entityCode;
 
     @Column(name = "created_by", nullable = false)
     private Integer createdBy;
 
-    @Column(name = "printed")
+    @Column(name = "printed", columnDefinition = "BOOLEAN DEFAULT FALSE")
     private Boolean printed = false;
 
-    // Getters and Setters
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getVoucherNumber() {
-        return voucherNumber;
-    }
-
-    public void setVoucherNumber(String voucherNumber) {
-        this.voucherNumber = voucherNumber;
-    }
-
-    public LocalDate getVoucherDate() {
-        return voucherDate;
-    }
-
-    public void setVoucherDate(LocalDate voucherDate) {
-        this.voucherDate = voucherDate;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public BigDecimal getTotalAmount() {
-        return totalAmount;
-    }
-
-    public void setTotalAmount(BigDecimal totalAmount) {
-        this.totalAmount = totalAmount;
-    }
-
-    public String getPaidTo() {
-        return paidTo;
-    }
-
-    public void setPaidTo(String paidTo) {
-        this.paidTo = paidTo;
-    }
-
-    public String getPaymentMethod() {
-        return paymentMethod;
-    }
-
-    public void setPaymentMethod(String paymentMethod) {
-        this.paymentMethod = paymentMethod;
-    }
-
-    public Integer getCreatedBy() {
-        return createdBy;
-    }
-
-    public void setCreatedBy(Integer createdBy) {
-        this.createdBy = createdBy;
-    }
-
-    public Boolean getPrinted() {
-        return printed;
-    }
-
-    public void setPrinted(Boolean printed) {
-        this.printed = printed;
-    }
+    @OneToMany(mappedBy = "voucher", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ExpenseVoucherDetailModel> details;
 }

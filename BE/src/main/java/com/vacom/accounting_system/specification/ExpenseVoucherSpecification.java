@@ -11,19 +11,15 @@ public class ExpenseVoucherSpecification {
         return (root, query, cb) -> cb.equal(root.get("voucherNumber"), voucherNumber);
     }
 
-    public static Specification<ExpenseVoucherModel> voucherDateAfter(LocalDate date) {
-        return (root, query, cb) -> cb.greaterThanOrEqualTo(root.get("voucherDate"), date);
+    public static Specification<ExpenseVoucherModel> voucherDateAfter(LocalDate startDate) {
+        return (root, query, cb) -> cb.greaterThanOrEqualTo(root.get("voucherDate"), startDate);
     }
 
-    public static Specification<ExpenseVoucherModel> voucherDateBefore(LocalDate date) {
-        return (root, query, cb) -> cb.lessThanOrEqualTo(root.get("voucherDate"), date);
+    public static Specification<ExpenseVoucherModel> voucherDateBefore(LocalDate endDate) {
+        return (root, query, cb) -> cb.lessThanOrEqualTo(root.get("voucherDate"), endDate);
     }
 
-    public static Specification<ExpenseVoucherModel> hasPaidTo(String paidTo) {
-        return (root, query, cb) -> cb.equal(root.get("paidTo"), paidTo);
-    }
-
-    public static Specification<ExpenseVoucherModel> hasPaymentMethod(String paymentMethod) {
-        return (root, query, cb) -> cb.equal(root.get("paymentMethod"), paymentMethod);
+    public static Specification<ExpenseVoucherModel> hasEntityCode(String entityCode) {
+        return (root, query, cb) -> cb.equal(root.get("entityCode"), entityCode);
     }
 }

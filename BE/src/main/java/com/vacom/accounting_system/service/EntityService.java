@@ -7,6 +7,7 @@ import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -38,5 +39,10 @@ public class EntityService {
     // Tìm kiếm và filter với Pageable và Specification
     public Page<EntityModel> searchEntities(Specification<EntityModel> spec, Pageable pageable) {
         return entityRepository.findAll(spec, pageable);
+    }
+
+    // Lấy toàn bộ danh sách entities
+    public List<EntityModel> getAllEntities() {
+        return entityRepository.findAll();
     }
 }

@@ -9,6 +9,8 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/entities")
 public class EntityController {
@@ -64,5 +66,12 @@ public class EntityController {
 
         Page<EntityModel> result = entityService.searchEntities(spec, pageable);
         return ResponseEntity.ok(result);
+    }
+
+    // Endpoint mới: Lấy danh sách toàn bộ entities
+    @GetMapping("/all")
+    public ResponseEntity<List<EntityModel>> getAllEntities() {
+        List<EntityModel> entities = entityService.getAllEntities();
+        return ResponseEntity.ok(entities);
     }
 }

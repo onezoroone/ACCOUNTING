@@ -47,13 +47,13 @@ public class ExpenseVoucherController {
         return ResponseEntity.noContent().build();
     }
 
-    // Endpoint cho tìm kiếm, filter và phân trang phiếu chi
+    // Endpoint tìm kiếm và lọc phiếu chi
     @GetMapping
     public ResponseEntity<Page<ExpenseVoucherModel>> searchExpenseVouchers(
             @RequestParam(required = false) String voucherNumber,
-            @RequestParam(required = false) String startDate,   // định dạng: yyyy-MM-dd
-            @RequestParam(required = false) String endDate,     // định dạng: yyyy-MM-dd
-            @RequestParam(required = false) String paidTo,
+            @RequestParam(required = false) String startDate,
+            @RequestParam(required = false) String endDate,
+            @RequestParam(required = false) String entityCode,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
@@ -68,7 +68,7 @@ public class ExpenseVoucherController {
                 LocalDate start = LocalDate.parse(startDate);
                 spec = spec.and(ExpenseVoucherSpecification.voucherDateAfter(start));
             } catch (DateTimeParseException e) {
-                // Xử lý lỗi định dạng ngày nếu cần
+                // Xử lý lỗi định dạng ngày
             }
         }
         if (endDate != null && !endDate.isEmpty()) {
@@ -76,11 +76,11 @@ public class ExpenseVoucherController {
                 LocalDate end = LocalDate.parse(endDate);
                 spec = spec.and(ExpenseVoucherSpecification.voucherDateBefore(end));
             } catch (DateTimeParseException e) {
-                // Xử lý lỗi định dạng ngày nếu cần
+                // Xử lý lỗi định dạng ngày
             }
         }
-        if (paidTo != null && !paidTo.isEmpty()) {
-            spec = spec.and(ExpenseVoucherSpecification.hasPaidTo(paidTo));
+        if (entityCode != null && !entityCode.isEmpty()) {
+            spec = spec.and(ExpenseVoucherSpecification.hasEntityCode(entityCode));
         }
 
         Page<ExpenseVoucherModel> result = expenseVoucherService.searchExpenseVouchers(spec, pageable);
