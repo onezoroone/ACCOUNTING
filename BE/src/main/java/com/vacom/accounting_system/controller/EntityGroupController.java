@@ -5,6 +5,7 @@ import com.vacom.accounting_system.service.EntityGroupService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,6 +18,7 @@ public class EntityGroupController {
     private EntityGroupService entityGroupService;
 
     @PostMapping
+    @PreAuthorize("hasAnyAuthority('CREATE_PARTNER')")
     public ResponseEntity<EntityGroupDTO> createEntityGroup(@RequestBody EntityGroupDTO entityGroupDTO) {
         try {
             EntityGroupDTO createdGroup = entityGroupService.createEntityGroup(entityGroupDTO);
@@ -27,12 +29,14 @@ public class EntityGroupController {
     }
 
     @GetMapping
+    @PreAuthorize("hasAnyAuthority('VIEW_PARTNER')")
     public ResponseEntity<List<EntityGroupDTO>> getAllEntityGroups() {
         List<EntityGroupDTO> entityGroups = entityGroupService.getAllEntityGroups();
         return new ResponseEntity<>(entityGroups, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('VIEW_PARTNER')")
     public ResponseEntity<EntityGroupDTO> getEntityGroupById(@PathVariable Long id) {
         try {
             EntityGroupDTO entityGroup = entityGroupService.getEntityGroupById(id);
@@ -43,6 +47,7 @@ public class EntityGroupController {
     }
 
     @GetMapping("/code/{code}")
+    @PreAuthorize("hasAnyAuthority('VIEW_PARTNER')")
     public ResponseEntity<EntityGroupDTO> getEntityGroupByCode(@PathVariable String code) {
         try {
             EntityGroupDTO entityGroup = entityGroupService.getEntityGroupByCode(code);
@@ -53,6 +58,7 @@ public class EntityGroupController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('EDIT_PARTNER')")
     public ResponseEntity<EntityGroupDTO> updateEntityGroup(
             @PathVariable Long id,
             @RequestBody EntityGroupDTO entityGroupDTO) {
@@ -68,6 +74,7 @@ public class EntityGroupController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('EDIT_PARTNER')")
     public ResponseEntity<Void> deleteEntityGroup(@PathVariable Long id) {
         try {
             entityGroupService.deleteEntityGroup(id);
@@ -81,18 +88,21 @@ public class EntityGroupController {
     }
 
     @GetMapping("/search")
+    @PreAuthorize("hasAnyAuthority('VIEW_PARTNER')")
     public ResponseEntity<List<EntityGroupDTO>> searchEntityGroups(@RequestParam String keyword) {
         List<EntityGroupDTO> entityGroups = entityGroupService.searchEntityGroups(keyword);
         return new ResponseEntity<>(entityGroups, HttpStatus.OK);
     }
 
     @GetMapping("/root")
+    @PreAuthorize("hasAnyAuthority('VIEW_PARTNER')")
     public ResponseEntity<List<EntityGroupDTO>> getRootEntityGroups() {
         List<EntityGroupDTO> rootGroups = entityGroupService.getRootEntityGroups();
         return new ResponseEntity<>(rootGroups, HttpStatus.OK);
     }
 
     @GetMapping("/children/{parentCode}")
+    @PreAuthorize("hasAnyAuthority('VIEW_PARTNER')")
     public ResponseEntity<List<EntityGroupDTO>> getChildEntityGroups(@PathVariable String parentCode) {
         List<EntityGroupDTO> childGroups = entityGroupService.getChildEntityGroups(parentCode);
         return new ResponseEntity<>(childGroups, HttpStatus.OK);

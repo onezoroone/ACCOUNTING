@@ -131,8 +131,8 @@ public class AuthService {
 
         Role userRole;
         try {
-            userRole = roleRepository.findByRoleName("USER")
-                    .orElseThrow(() -> new RoleNotFoundException("Default role USER not found"));
+            userRole = roleRepository.findByRoleName("VIEWER")
+                    .orElseThrow(() -> new RoleNotFoundException("Default role VIEWER not found"));
         } catch (RoleNotFoundException e) {
             log.error("Failed to find default role USER: {}", e.getMessage());
             return AuthResponse.builder()

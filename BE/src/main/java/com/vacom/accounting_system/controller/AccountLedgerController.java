@@ -10,6 +10,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
@@ -22,7 +23,8 @@ public class AccountLedgerController {
 
     private final AccountLedgerService accountLedgerService;
 
-    @GetMapping("/report")
+    @GetMapping
+    @PreAuthorize("hasAnyAuthority('VIEW_ACCOUNT_LEDGER')")
     public ResponseEntity<Page<AccountLedgerReportDTO>> getAccountLedgerReport(
             @RequestParam List<String> accountCode,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
@@ -37,12 +39,14 @@ public class AccountLedgerController {
     }
 
     @PostMapping
+    @PreAuthorize("hasAnyAuthority('CREATE_VOUCHER')")
     public ResponseEntity<VoucherDetail> createVoucherDetail(@RequestBody VoucherDetail voucherDetail) {
         VoucherDetail savedDetail = accountLedgerService.createVoucherDetail(voucherDetail);
         return ResponseEntity.status(201).body(savedDetail);
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('EDIT_VOUCHER')")
     public ResponseEntity<VoucherDetail> updateVoucherDetail(
             @PathVariable Integer id,
             @RequestBody VoucherDetail voucherDetail) {
@@ -51,6 +55,7 @@ public class AccountLedgerController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('EDIT_VOUCHER')") // Giả sử DELETE cũng cần EDIT_VOUCHER
     public ResponseEntity<Void> deleteVoucherDetail(@PathVariable Integer id) {
         accountLedgerService.deleteVoucherDetail(id);
         return ResponseEntity.noContent().build();
