@@ -16,7 +16,7 @@ import java.util.Date;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/account-ledger")
+@RequestMapping("/api/reports/account-ledger")
 @RequiredArgsConstructor
 public class AccountLedgerController {
 

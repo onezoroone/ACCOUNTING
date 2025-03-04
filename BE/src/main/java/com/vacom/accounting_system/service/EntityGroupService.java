@@ -1,70 +1,171 @@
 package com.vacom.accounting_system.service;
 
-import com.vacom.accounting_system.entity.Partner;
-import com.vacom.accounting_system.repository.PartnerRepository;
+import com.vacom.accounting_system.dto.EntityGroupDTO;
+import com.vacom.accounting_system.entity.EntityGroup;
+import com.vacom.accounting_system.repository.EntityGroupRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Stream; // Thêm import này
-import java.util.stream.Collectors; // Thêm import này
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 @Service
-public class PartnerService {
+public class EntityGroupService {
 
     @Autowired
-    private PartnerRepository partnerRepository;
+    private EntityGroupRepository entityGroupRepository;
 
-    // Create
-    public Partner createPartner(Partner partner) {
-        // Thêm validation nếu cần (ví dụ: kiểm tra partnerName không rỗng)
-        if (partner.getPartnerName() == null || partner.getPartnerName().trim().isEmpty()) {
-            throw new IllegalArgumentException("Partner name cannot be empty");
+    // Chuyển đổi Entity sang DTO
+    private EntityGroupDTO convertToDTO(EntityGroup entityGroup) {
+        return EntityGroupDTO.builder()
+                .id(entityGroup.getId())
+                .entityCode(entityGroup.getEntityCode())
+                .entityGroupName(entityGroup.getEntityGroupName())
+                .parentCode(entityGroup.getParentCode())
+                .build();
+    }
+
+    // Chuyển đổi DTO sang Entity
+    private EntityGroup convertToEntity(EntityGroupDTO dto) {
+        EntityGroup entityGroup = EntityGroup.builder()
+                .id(dto.getId())
+                .entityCode(dto.getEntityCode())
+                .entityGroupName(dto.getEntityGroupName())
+                .build();
+
+        // Thiết lập parent nếu có parentCode
+        if (dto.getParentCode() != null && !dto.getParentCode().isEmpty()) {
+            entityGroupRepository.findByEntityCode(dto.getParentCode())
+                    .ifPresent(parentEntity -> {
+                        entityGroup.setParent(parentEntity);
+                    });
         }
-        return partnerRepository.save(partner);
+
+        return entityGroup;
     }
 
-    // Read (Get all)
-    public List<Partner> getAllPartners() {
-        return partnerRepository.findAll();
+    // Tạo mới
+    public EntityGroupDTO createEntityGroup(EntityGroupDTO dto) {
+        if (dto.getEntityCode() == null || dto.getEntityCode().trim().isEmpty()) {
+            throw new IllegalArgumentException("Entity code không được để trống");
+        }
+
+        if (dto.getEntityGroupName() == null || dto.getEntityGroupName().trim().isEmpty()) {
+            throw new IllegalArgumentException("Tên nhóm không được để trống");
+        }
+
+        // Kiểm tra mã đã tồn tại chưa
+        if (entityGroupRepository.findByEntityCode(dto.getEntityCode()).isPresent()) {
+            throw new IllegalArgumentException("Mã entity đã tồn tại: " + dto.getEntityCode());
+        }
+
+        EntityGroup entityGroup = convertToEntity(dto);
+        EntityGroup savedEntity = entityGroupRepository.save(entityGroup);
+        return convertToDTO(savedEntity);
     }
 
-    // Read (Get by ID)
-    public Optional<Partner> getPartnerById(Integer id) {
-        return partnerRepository.findById(id);
+    // Lấy tất cả
+    public List<EntityGroupDTO> getAllEntityGroups() {
+        return entityGroupRepository.findAll().stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
     }
 
-    // Update
-    public Partner updatePartner(Integer id, Partner partnerDetails) {
-        Partner partner = partnerRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Partner not found with id: " + id));
-
-        partner.setPartnerName(partnerDetails.getPartnerName());
-        partner.setAddress(partnerDetails.getAddress());
-        partner.setPhoneNumber(partnerDetails.getPhoneNumber());
-        partner.setTaxCode(partnerDetails.getTaxCode());
-
-        return partnerRepository.save(partner);
+    // Lấy theo ID
+    public EntityGroupDTO getEntityGroupById(Long id) {
+        return entityGroupRepository.findById(id)
+                .map(this::convertToDTO)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy nhóm với ID: " + id));
     }
 
-    // Delete
-    public void deletePartner(Integer id) {
-        Partner partner = partnerRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Partner not found with id: " + id));
-        partnerRepository.delete(partner);
+    // Lấy theo mã
+    public EntityGroupDTO getEntityGroupByCode(String code) {
+        return entityGroupRepository.findByEntityCode(code)
+                .map(this::convertToDTO)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy nhóm với mã: " + code));
     }
 
-    // Search (theo tên hoặc mã số thuế)
-    public List<Partner> searchPartners(String keyword) {
+    // Cập nhật
+    public EntityGroupDTO updateEntityGroup(Long id, EntityGroupDTO dto) {
+        EntityGroup entityGroup = entityGroupRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy nhóm với ID: " + id));
+
+        entityGroup.setEntityGroupName(dto.getEntityGroupName());
+
+        // Chỉ cập nhật entityCode nếu không trùng với mã khác
+        if (!entityGroup.getEntityCode().equals(dto.getEntityCode())) {
+            entityGroupRepository.findByEntityCode(dto.getEntityCode())
+                    .ifPresent(e -> {
+                        if (!e.getId().equals(id)) {
+                            throw new IllegalArgumentException("Mã entity đã tồn tại: " + dto.getEntityCode());
+                        }
+                    });
+            entityGroup.setEntityCode(dto.getEntityCode());
+        }
+
+        // Cập nhật parent nếu có thay đổi
+        if (dto.getParentCode() != null && !dto.getParentCode().equals(entityGroup.getParentCode())) {
+            // Kiểm tra không tạo vòng lặp (entityGroup không thể là parent của chính nó)
+            if (dto.getParentCode().equals(entityGroup.getEntityCode())) {
+                throw new IllegalArgumentException("Nhóm không thể là cha của chính nó");
+            }
+
+            entityGroupRepository.findByEntityCode(dto.getParentCode())
+                    .ifPresentOrElse(
+                            entityGroup::setParent,
+                            () -> {
+                                if (!dto.getParentCode().isEmpty()) {
+                                    throw new RuntimeException("Không tìm thấy nhóm cha với mã: " + dto.getParentCode());
+                                }
+                            }
+                    );
+        }
+
+        EntityGroup updatedEntity = entityGroupRepository.save(entityGroup);
+        return convertToDTO(updatedEntity);
+    }
+
+    // Xóa
+    public void deleteEntityGroup(Long id) {
+        EntityGroup entityGroup = entityGroupRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy nhóm với ID: " + id));
+
+        // Kiểm tra xem có nhóm con không
+        List<EntityGroup> children = entityGroupRepository.findByParentCode(entityGroup.getEntityCode());
+        if (!children.isEmpty()) {
+            throw new IllegalStateException("Không thể xóa nhóm có chứa nhóm con. Hãy xóa các nhóm con trước.");
+        }
+
+        entityGroupRepository.delete(entityGroup);
+    }
+
+    // Tìm kiếm
+    public List<EntityGroupDTO> searchEntityGroups(String keyword) {
         if (keyword == null || keyword.trim().isEmpty()) {
-            return getAllPartners(); // Trả về tất cả nếu không có keyword
+            return getAllEntityGroups();
         }
-        // Tìm theo tên hoặc mã số thuế
-        List<Partner> byName = partnerRepository.findByPartnerNameContainingIgnoreCase(keyword);
-        List<Partner> byTaxCode = partnerRepository.findByTaxCodeContainingIgnoreCase(keyword);
-        // Kết hợp kết quả (loại bỏ trùng lặp)
-        return Stream.concat(byName.stream(), byTaxCode.stream())
+
+        List<EntityGroup> byName = entityGroupRepository.findByEntityGroupNameContainingIgnoreCase(keyword);
+        List<EntityGroup> byCode = entityGroupRepository.findByEntityCodeContainingIgnoreCase(keyword);
+
+        return Stream.concat(byName.stream(), byCode.stream())
                 .distinct()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+    // Lấy danh sách các nhóm cấp cao nhất (không có parent)
+    public List<EntityGroupDTO> getRootEntityGroups() {
+        return entityGroupRepository.findByParentIsNull().stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+    // Lấy danh sách các nhóm con
+    public List<EntityGroupDTO> getChildEntityGroups(String parentCode) {
+        return entityGroupRepository.findByParentCode(parentCode).stream()
+                .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
 }

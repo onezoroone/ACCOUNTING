@@ -1,72 +1,100 @@
 package com.vacom.accounting_system.controller;
 
-import com.vacom.accounting_system.model.Partner;
+import com.vacom.accounting_system.dto.EntityGroupDTO;
 import com.vacom.accounting_system.service.EntityGroupService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/partners")
-public class PartnerController {
+@RequestMapping("/api/master-data/entity-groups")
+public class EntityGroupController {
 
     @Autowired
-    private EntityGroupService partnerService;
+    private EntityGroupService entityGroupService;
 
-    // Create
     @PostMapping
-    public ResponseEntity<Partner> createPartner(@RequestBody Partner partner) {
+    public ResponseEntity<EntityGroupDTO> createEntityGroup(@RequestBody EntityGroupDTO entityGroupDTO) {
         try {
-            Partner createdPartner = partnerService.createPartner(partner);
-            return ResponseEntity.ok(createdPartner);
+            EntityGroupDTO createdGroup = entityGroupService.createEntityGroup(entityGroupDTO);
+            return new ResponseEntity<>(createdGroup, HttpStatus.CREATED);
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(null);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
-    // Read (Get all)
     @GetMapping
-    public ResponseEntity<List<Partner>> getAllPartners() {
-        List<Partner> partners = partnerService.getAllPartners();
-        return ResponseEntity.ok(partners);
+    public ResponseEntity<List<EntityGroupDTO>> getAllEntityGroups() {
+        List<EntityGroupDTO> entityGroups = entityGroupService.getAllEntityGroups();
+        return new ResponseEntity<>(entityGroups, HttpStatus.OK);
     }
 
-    // Read (Get by ID)
     @GetMapping("/{id}")
-    public ResponseEntity<Partner> getPartnerById(@PathVariable Integer id) {
-        return partnerService.getPartnerById(id)
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+    public ResponseEntity<EntityGroupDTO> getEntityGroupById(@PathVariable Long id) {
+        try {
+            EntityGroupDTO entityGroup = entityGroupService.getEntityGroupById(id);
+            return new ResponseEntity<>(entityGroup, HttpStatus.OK);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
-    // Update
+    @GetMapping("/code/{code}")
+    public ResponseEntity<EntityGroupDTO> getEntityGroupByCode(@PathVariable String code) {
+        try {
+            EntityGroupDTO entityGroup = entityGroupService.getEntityGroupByCode(code);
+            return new ResponseEntity<>(entityGroup, HttpStatus.OK);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
     @PutMapping("/{id}")
-    public ResponseEntity<Partner> updatePartner(@PathVariable Integer id, @RequestBody Partner partnerDetails) {
+    public ResponseEntity<EntityGroupDTO> updateEntityGroup(
+            @PathVariable Long id,
+            @RequestBody EntityGroupDTO entityGroupDTO) {
         try {
-            Partner updatedPartner = partnerService.updatePartner(id, partnerDetails);
-            return ResponseEntity.ok(updatedPartner);
+            EntityGroupDTO updatedGroup = entityGroupService.updateEntityGroup(id, entityGroupDTO);
+            return new ResponseEntity<>(updatedGroup, HttpStatus.OK);
         } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
+            if (e instanceof IllegalArgumentException) {
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 
-    // Delete
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletePartner(@PathVariable Integer id) {
+    public ResponseEntity<Void> deleteEntityGroup(@PathVariable Long id) {
         try {
-            partnerService.deletePartner(id);
-            return ResponseEntity.ok().build();
+            entityGroupService.deleteEntityGroup(id);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
+            if (e instanceof IllegalStateException) {
+                return new ResponseEntity<>(HttpStatus.CONFLICT);
+            }
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 
-    // Search
     @GetMapping("/search")
-    public ResponseEntity<List<Partner>> searchPartners(@RequestParam String keyword) {
-        List<Partner> partners = partnerService.searchPartners(keyword);
-        return ResponseEntity.ok(partners);
+    public ResponseEntity<List<EntityGroupDTO>> searchEntityGroups(@RequestParam String keyword) {
+        List<EntityGroupDTO> entityGroups = entityGroupService.searchEntityGroups(keyword);
+        return new ResponseEntity<>(entityGroups, HttpStatus.OK);
+    }
+
+    @GetMapping("/root")
+    public ResponseEntity<List<EntityGroupDTO>> getRootEntityGroups() {
+        List<EntityGroupDTO> rootGroups = entityGroupService.getRootEntityGroups();
+        return new ResponseEntity<>(rootGroups, HttpStatus.OK);
+    }
+
+    @GetMapping("/children/{parentCode}")
+    public ResponseEntity<List<EntityGroupDTO>> getChildEntityGroups(@PathVariable String parentCode) {
+        List<EntityGroupDTO> childGroups = entityGroupService.getChildEntityGroups(parentCode);
+        return new ResponseEntity<>(childGroups, HttpStatus.OK);
     }
 }

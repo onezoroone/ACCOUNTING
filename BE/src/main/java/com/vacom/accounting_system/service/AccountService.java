@@ -1,10 +1,12 @@
 package com.vacom.accounting_system.service;
 
 import java.util.List;
+import java.util.Optional;
+
+import com.vacom.accounting_system.entity.Account;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.vacom.accounting_system.model.Account;
 import com.vacom.accounting_system.repository.AccountRepository;
 
 @Service
@@ -38,8 +40,7 @@ public class AccountService {
     }
 
     // Tìm tài khoản theo mã tài khoản
-    public Account getAccountByCode(String accountCode) {
+    public Optional<Account> getAccountByCode(String accountCode) {
         return accountRepository.findByAccountCode(accountCode);
     }
-
 }

@@ -1,6 +1,6 @@
 package com.vacom.accounting_system.controller;
 
-import com.vacom.accounting_system.model.EntityModel;
+import com.vacom.accounting_system.entity.BusinessEntity;
 import com.vacom.accounting_system.service.EntityService;
 import com.vacom.accounting_system.specification.EntitySpecification;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,27 +10,27 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/entities")
+@RequestMapping("/api/master-data/entities")
 public class EntityController {
 
     @Autowired
     private EntityService entityService;
 
     @PostMapping
-    public ResponseEntity<EntityModel> createEntity(@RequestBody EntityModel entity) {
-        EntityModel savedEntity = entityService.createEntity(entity);
+    public ResponseEntity<BusinessEntity> createEntity(@RequestBody BusinessEntity entity) {
+        BusinessEntity savedEntity = entityService.createEntity(entity);
         return ResponseEntity.ok(savedEntity);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<EntityModel> getEntityById(@PathVariable Integer id) {
+    public ResponseEntity<BusinessEntity> getEntityById(@PathVariable Integer id) {
         return entityService.getEntityById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<EntityModel> updateEntity(@PathVariable Integer id, @RequestBody EntityModel entity) {
+    public ResponseEntity<BusinessEntity> updateEntity(@PathVariable Integer id, @RequestBody BusinessEntity entity) {
         if (!entityService.getEntityById(id).isPresent()) {
             return ResponseEntity.notFound().build();
         }
@@ -46,14 +46,14 @@ public class EntityController {
 
     // Endpoint cho filter & search
     @GetMapping
-    public ResponseEntity<Page<EntityModel>> searchEntities(
+    public ResponseEntity<Page<BusinessEntity>> searchEntities(
             @RequestParam(required = false) String taxCode,
             @RequestParam(required = false) String entityName,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         
         Pageable pageable = PageRequest.of(page, size, Sort.by("id").ascending());
-        Specification<EntityModel> spec = Specification.where(null);
+        Specification<BusinessEntity> spec = Specification.where(null);
 
         if (taxCode != null && !taxCode.isEmpty()) {
             spec = spec.and(EntitySpecification.hasTaxCode(taxCode));
@@ -62,7 +62,7 @@ public class EntityController {
             spec = spec.and(EntitySpecification.hasEntityNameLike(entityName));
         }
 
-        Page<EntityModel> result = entityService.searchEntities(spec, pageable);
+        Page<BusinessEntity> result = entityService.searchEntities(spec, pageable);
         return ResponseEntity.ok(result);
     }
 }

@@ -35,7 +35,7 @@ public class SecurityConfig {
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/auth/**", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/accounts").hasAnyAuthority("VIEW_ACCOUNT")
                         .requestMatchers(HttpMethod.POST, "/api/accounts").hasAnyAuthority("CREATE_ACCOUNT")
                         .requestMatchers(HttpMethod.PUT, "/api/accounts/**").hasAnyAuthority("EDIT_ACCOUNT")

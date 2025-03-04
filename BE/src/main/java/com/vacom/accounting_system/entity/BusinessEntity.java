@@ -1,10 +1,12 @@
 package com.vacom.accounting_system.entity;
 
 import jakarta.persistence.*;
+import lombok.Data;
 
 @Entity
+@Data
 @Table(name = "entities")
-public class Entity {
+public class BusinessEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,70 +33,4 @@ public class Entity {
 
     @Column(name = "email")
     private String email;
-
-    // Getters and Setters
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getTaxCode() {
-        return taxCode;
-    }
-
-    public void setTaxCode(String taxCode) {
-        this.taxCode = taxCode;
-    }
-
-    public String getEntityCode() {
-        return entityCode;
-    }
-
-    public void setEntityCode(String entityCode) {
-        this.entityCode = entityCode;
-    }
-
-    public String getEntityName() {
-        return entityName;
-    }
-
-    public void setEntityName(String entityName) {
-        this.entityName = entityName;
-    }
-
-    public String getEntityGroupCode() {
-        return entityGroupCode;
-    }
-
-    public void setEntityGroupCode(String entityGroupCode) {
-        this.entityGroupCode = entityGroupCode;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
 }

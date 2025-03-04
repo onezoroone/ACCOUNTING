@@ -1,6 +1,6 @@
 package com.vacom.accounting_system.service;
 
-import com.vacom.accounting_system.model.EntityModel;
+import com.vacom.accounting_system.entity.BusinessEntity;
 import com.vacom.accounting_system.repository.EntityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
@@ -16,17 +16,17 @@ public class EntityService {
     private EntityRepository entityRepository;
 
     // Tạo mới đối tượng
-    public EntityModel createEntity(EntityModel entity) {
+    public BusinessEntity createEntity(BusinessEntity entity) {
         return entityRepository.save(entity);
     }
 
     // Lấy đối tượng theo id
-    public Optional<EntityModel> getEntityById(Integer id) {
+    public Optional<BusinessEntity> getEntityById(Integer id) {
         return entityRepository.findById(id);
     }
 
     // Cập nhật đối tượng
-    public EntityModel updateEntity(EntityModel entity) {
+    public BusinessEntity updateEntity(BusinessEntity entity) {
         return entityRepository.save(entity);
     }
 
@@ -36,7 +36,7 @@ public class EntityService {
     }
 
     // Tìm kiếm và filter với Pageable và Specification
-    public Page<EntityModel> searchEntities(Specification<EntityModel> spec, Pageable pageable) {
+    public Page<BusinessEntity> searchEntities(Specification<BusinessEntity> spec, Pageable pageable) {
         return entityRepository.findAll(spec, pageable);
     }
 }
