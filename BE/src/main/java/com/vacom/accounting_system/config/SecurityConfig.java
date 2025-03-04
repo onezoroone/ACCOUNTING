@@ -35,24 +35,33 @@ public class SecurityConfig {
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/api/auth/**", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+                        .requestMatchers(
+                                "/api/auth/**",
+                                "/v3/api-docs/**",
+                                "/v3/api-docs.yaml",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html",
+                                "/swagger-resources/**",
+                                "/webjars/**"
+                        ).permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/master-data/accounts").hasAnyAuthority("VIEW_ACCOUNT")
                         .requestMatchers(HttpMethod.POST, "/api/master-data/accounts").hasAnyAuthority("CREATE_ACCOUNT")
                         .requestMatchers(HttpMethod.PUT, "/api/master-data/accounts/**").hasAnyAuthority("EDIT_ACCOUNT")
-                        .requestMatchers(HttpMethod.DELETE, "/api/master-data/accounts/**").hasAnyAuthority("EDIT_ACCOUNT") // Giả sử DELETE cần EDIT
+                        .requestMatchers(HttpMethod.DELETE, "/api/master-data/accounts/**").hasAnyAuthority("EDIT_ACCOUNT")
                         .requestMatchers(HttpMethod.GET, "/api/reports/account-ledger/report").hasAnyAuthority("VIEW_ACCOUNT_LEDGER")
                         .requestMatchers(HttpMethod.POST, "/api/reports/account-ledger").hasAnyAuthority("CREATE_VOUCHER")
                         .requestMatchers(HttpMethod.PUT, "/api/reports/account-ledger/**").hasAnyAuthority("EDIT_VOUCHER")
-                        .requestMatchers(HttpMethod.DELETE, "/api/reports/account-ledger/**").hasAnyAuthority("EDIT_VOUCHER") // Giả sử DELETE cần EDIT
+                        .requestMatchers(HttpMethod.DELETE, "/api/reports/account-ledger/**").hasAnyAuthority("EDIT_VOUCHER")
                         .requestMatchers(HttpMethod.GET, "/api/reports/trial-balance/**").hasAnyAuthority("VIEW_TRIAL_BALANCE")
                         .requestMatchers(HttpMethod.GET, "/api/master-data/entities").hasAnyAuthority("VIEW_PARTNER")
                         .requestMatchers(HttpMethod.POST, "/api/master-data/entities").hasAnyAuthority("CREATE_PARTNER")
                         .requestMatchers(HttpMethod.PUT, "/api/master-data/entities/**").hasAnyAuthority("EDIT_PARTNER")
-                        .requestMatchers(HttpMethod.DELETE, "/api/master-data/entities/**").hasAnyAuthority("EDIT_PARTNER") // Giả sử DELETE cần EDIT
+                        .requestMatchers(HttpMethod.DELETE, "/api/master-data/entities/**").hasAnyAuthority("EDIT_PARTNER")
                         .requestMatchers(HttpMethod.GET, "/api/master-data/entity-groups/**").hasAnyAuthority("VIEW_PARTNER")
                         .requestMatchers(HttpMethod.POST, "/api/master-data/entity-groups").hasAnyAuthority("CREATE_PARTNER")
                         .requestMatchers(HttpMethod.PUT, "/api/master-data/entity-groups/**").hasAnyAuthority("EDIT_PARTNER")
-                        .requestMatchers(HttpMethod.DELETE, "/api/master-data/entity-groups/**").hasAnyAuthority("EDIT_PARTNER") // Giả sử DELETE cần EDIT
+                        .requestMatchers(HttpMethod.DELETE, "/api/master-data/entity-groups/**").hasAnyAuthority("EDIT_PARTNER")
+                        .requestMatchers(HttpMethod.GET, "/api/dashboard").hasAnyAuthority("VIEW_ACCOUNT_LEDGER", "VIEW_TRIAL_BALANCE")
                         .requestMatchers(HttpMethod.GET, "/api/users").hasAnyAuthority("VIEW_USER")
                         .requestMatchers(HttpMethod.POST, "/api/users").hasAnyAuthority("CREATE_USER")
                         .requestMatchers("/api/roles/**").hasAnyAuthority("MANAGE_ROLES")

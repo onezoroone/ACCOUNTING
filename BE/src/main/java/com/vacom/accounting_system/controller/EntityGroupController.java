@@ -2,6 +2,7 @@ package com.vacom.accounting_system.controller;
 
 import com.vacom.accounting_system.dto.EntityGroupDTO;
 import com.vacom.accounting_system.service.EntityGroupService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +13,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/master-data/entity-groups")
+@Tag(name = "Nhóm đối tượng", description = "API quản lý nhóm đối tượng")
 public class EntityGroupController {
 
     @Autowired
