@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Slf4j
+@CrossOrigin("http://localhost:5173")
 public class AuthController {
 
     private final AuthService authService;
