@@ -26,3 +26,4 @@ public interface AccountRepository extends JpaRepository<Account, Integer> {
     List<Account> findByParentIdIsNull();
 >>>>>>> origin/tk
 }
+

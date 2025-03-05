@@ -10,3 +10,4 @@ import java.util.Date;
 public interface VoucherRepository extends JpaRepository<Voucher, Integer> {
     Page<Voucher> findByVoucherDateBetween(Date startDate, Date endDate, Pageable pageable);
 }
+
