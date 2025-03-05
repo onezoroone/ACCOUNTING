@@ -24,6 +24,7 @@ ChartJS.register(
     Filler,
     Legend
 );
+import PropTypes from "prop-types";
 
 export default function Chart() {
     const options = {
@@ -57,7 +58,7 @@ export default function Chart() {
     )
 }
 
-export function Chart2(){
+export function Chart2({data}){
     const options = {
         responsive: true,
         interaction: {
@@ -68,7 +69,7 @@ export function Chart2(){
         plugins: {
             title: {
             display: true,
-            text: 'Chart.js Line Chart - Multi Axis',
+            text: 'Thu chi hàng tháng trong năm',
             },
         },
         scales: {
@@ -87,39 +88,46 @@ export function Chart2(){
             },
         },
     };
-    const labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
-    const data = {
+    const labels = data.map(item => item.month);
+    const dataChart = {
         labels,
         datasets: [
             {
-            label: 'Dataset 1',
-            data: [65, 59, 80, 81, 56, 55, 40],
-            borderColor: 'rgb(255, 99, 132)',
-            backgroundColor: 'rgba(255, 99, 132, 0.5)',
-            yAxisID: 'y',
+              label: 'Tiền chi',
+              data: data.map(item => item.expense),
+              borderColor: 'rgb(255, 99, 132)',
+              backgroundColor: 'rgba(255, 99, 132, 0.5)',
+              yAxisID: 'y',
             },
             {
-            label: 'Dataset 2',
-            data: [28, 48, 40, 19, 86, 27, 90],
-            borderColor: 'rgb(53, 162, 235)',
-            backgroundColor: 'rgba(53, 162, 235, 0.5)',
-            yAxisID: 'y1',
+              label: 'Tiền thu',
+              data: data.map(item => item.income),
+              borderColor: 'rgb(53, 162, 235)',
+              backgroundColor: 'rgba(53, 162, 235, 0.5)',
+              yAxisID: 'y1',
             },
         ],
     };
 
     return (
-        <Line options={options} data={data} />
+        <Line options={options} data={dataChart} />
     )
 }
+Chart2.propTypes = {
+  data: PropTypes.arrayOf(PropTypes.shape({
+    month: PropTypes.string.isRequired,
+    expense: PropTypes.string.isRequired,
+    income: PropTypes.string.isRequired,
+  })).isRequired,
+};
 
-export function Chart3(){
-    const data = {
-        labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+export function Chart3({data}){
+    const dataChart = {
+        labels: data.map(item => item.year),
         datasets: [
           {
-            label: '# of Votes',
-            data: [12, 19, 3, 5, 2, 3],
+            label: '# VNĐ',
+            data: data.map(item => item.totalRevenue),
             backgroundColor: [
               'rgba(255, 99, 132, 0.2)',
               'rgba(54, 162, 235, 0.2)',
@@ -141,5 +149,11 @@ export function Chart3(){
         ],
     };
 
-    return <Pie data={data} />;
+    return <Pie data={dataChart} />;
 }
+Chart3.propTypes = {
+  data: PropTypes.arrayOf(PropTypes.shape({
+    year: PropTypes.number.isRequired,
+    totalRevenue: PropTypes.number.isRequired,
+  })).isRequired,
+};
