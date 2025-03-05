@@ -18,22 +18,22 @@ const PartnerGroupList = ({ data, onEdit, onDelete, onAdd }) => {
         </thead>
         <tbody>
           {data.map((item, index) => (
-            <tr key={index}>
+            <tr key={item.id}>
               <td>{index + 1}</td>
-              <td>{item.entity_code}</td>
+              <td>{item.entity_group_code}</td>
               <td>{item.entity_group_name}</td>
               <td>{item.parent_code}</td>
               <td>
-                <Button variant="" size="sm" onClick={() => onEdit(index)}>✏️</Button>
+                <Button variant="warning" size="sm" onClick={() => onEdit(item)}>✏️</Button>
               </td>
               <td>
-                <Button variant="" size="sm" onClick={() => onDelete(index)}>🗑️</Button>
+                <Button variant="danger" size="sm" onClick={() => onDelete(item.id)}>🗑️</Button>
               </td>
             </tr>
           ))}
         </tbody>
       </Table>
-      <div className="d-flex justify-content-start ">
+      <div className="d-flex justify-content-start">
         <Button variant="primary" onClick={onAdd}>Thêm mới</Button>
       </div>
     </div>
