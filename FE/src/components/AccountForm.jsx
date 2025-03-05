@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import { useState } from "react";
+import PropTypes from "prop-types";
 import { Modal, Button, Form, Row, Col } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 
@@ -65,6 +66,16 @@ const AccountForm = ({ onSubmit, onClose, initialData }) => {
       </Modal.Body>
     </Modal>
   );
+};
+AccountForm.propTypes = {
+  onSubmit: PropTypes.func.isRequired,
+  onClose: PropTypes.func.isRequired,
+  initialData: PropTypes.shape({
+    accountCode: PropTypes.string,
+    accountName: PropTypes.string,
+    parentId: PropTypes.string,
+    accountType: PropTypes.string,
+  }),
 };
 
 export default AccountForm;

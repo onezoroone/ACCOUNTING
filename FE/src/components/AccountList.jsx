@@ -1,5 +1,5 @@
-import React from "react";
 import { Table, Button } from "react-bootstrap";
+import PropTypes from 'prop-types';
 
 const AccountList = ({ data, onEdit, onDelete, onAdd }) => {
   return (
@@ -29,7 +29,7 @@ const AccountList = ({ data, onEdit, onDelete, onAdd }) => {
                 <Button variant="" size="sm" onClick={() => onEdit(index)}>✏️</Button>
               </td>
               <td>
-                <Button variant="" size="sm" onClick={() => onDelete(index)}>🗑️</Button>
+                <Button variant="" size="sm" onClick={() => onDelete(item)}>🗑️</Button>
               </td>
             </tr>
           ))}
@@ -40,6 +40,17 @@ const AccountList = ({ data, onEdit, onDelete, onAdd }) => {
       </div>
     </div>
   );
+};
+AccountList.propTypes = {
+  data: PropTypes.arrayOf(PropTypes.shape({
+    accountCode: PropTypes.string.isRequired,
+    accountName: PropTypes.string.isRequired,
+    parentId: PropTypes.string,
+    accountType: PropTypes.string.isRequired
+  })).isRequired,
+  onEdit: PropTypes.func.isRequired,
+  onDelete: PropTypes.func.isRequired,
+  onAdd: PropTypes.func.isRequired
 };
 
 export default AccountList;

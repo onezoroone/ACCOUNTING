@@ -2,6 +2,7 @@ package com.vacom.accounting_system.controller;
 
 import com.vacom.accounting_system.entity.Account;
 import com.vacom.accounting_system.service.AccountService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -11,6 +12,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/master-data/accounts")
+@Tag(name = "Tài khoản", description = "API tài khoản")
 public class AccountController {
     @Autowired
     private AccountService accountService;

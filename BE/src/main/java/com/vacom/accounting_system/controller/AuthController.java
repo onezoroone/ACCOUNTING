@@ -4,6 +4,7 @@ import com.vacom.accounting_system.dto.request.LoginRequest;
 import com.vacom.accounting_system.dto.request.RegisterRequest;
 import com.vacom.accounting_system.dto.response.AuthResponse;
 import com.vacom.accounting_system.service.AuthService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +21,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Slf4j
-
+@Tag(name = "Xác thực", description = "API xác thực người dùng")
 public class AuthController {
 
     private final AuthService authService;

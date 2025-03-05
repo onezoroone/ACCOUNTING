@@ -3,6 +3,7 @@ package com.vacom.accounting_system.controller;
 import com.vacom.accounting_system.dto.AccountLedgerReportDTO;
 import com.vacom.accounting_system.entity.VoucherDetail;
 import com.vacom.accounting_system.service.AccountLedgerService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,6 +20,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/reports/account-ledger")
 @RequiredArgsConstructor
+@Tag(name = "Báo cáo sổ chi tiết tài khoản", description = "API báo cáo sổ chi tiết tài khoản")
 public class AccountLedgerController {
 
     private final AccountLedgerService accountLedgerService;

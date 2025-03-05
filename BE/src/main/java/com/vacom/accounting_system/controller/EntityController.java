@@ -3,6 +3,7 @@ package com.vacom.accounting_system.controller;
 import com.vacom.accounting_system.entity.BusinessEntity;
 import com.vacom.accounting_system.service.EntityService;
 import com.vacom.accounting_system.specification.EntitySpecification;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/master-data/entities")
+@Tag(name = "Đối tượng", description = "API quản lý đối tượng")
 public class EntityController {
 
     @Autowired

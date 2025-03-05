@@ -19,4 +19,5 @@ public interface VoucherDetailRepository extends JpaRepository<VoucherDetail, In
     List<VoucherDetail> findByVoucherVoucherDateBetween(Date startDate, Date endDate);
 
     List<VoucherDetail> findByVoucherVoucherDateBefore(Date date);
+    List<VoucherDetail> findByAccountDebitAccountCodeInOrAccountCreditAccountCodeIn(List<String> debitCodes, List<String> creditCodes);
 }

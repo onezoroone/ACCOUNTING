@@ -11,4 +11,5 @@ public interface AccountRepository extends JpaRepository<Account, Integer> {
     boolean existsByAccountCode(String accountCode);
     List<Account> findAllByAccountCodeIn(List<String> accountCodes);
     List<Account> findByParentIdIsNull();
+    List<Account> findByAccountCodeStartingWith(String prefix);
 }
