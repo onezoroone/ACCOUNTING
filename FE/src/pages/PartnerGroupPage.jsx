@@ -3,26 +3,20 @@ import { Container, Row, Col } from "react-bootstrap";
 import PartnerGroupList from "../components/PartnerGroupList";
 import PartnerGroupForm from "../components/PartnerGroupForm";
 import axiosClient from "../libs/axios-client";
-<<<<<<< HEAD
 import withReactContent from "sweetalert2-react-content";
 import Swal from "sweetalert2";
-=======
->>>>>>> 766536d (newupdate)
+
 
 const PartnerGroupPage = () => {
   const [data, setData] = useState([]); // Danh sách nhóm đối tượng
   const [isFormOpen, setIsFormOpen] = useState(false);
-<<<<<<< HEAD
   const [editIndex, setEditIndex] = useState(null);
   const [reload, setReload] = useState(false);
   const MySwal = withReactContent(Swal);
-=======
-  const [selectedEntity, setSelectedEntity] = useState(null);
->>>>>>> 766536d (newupdate)
+
 
   // Gọi API lấy danh sách nhóm đối tượng
   useEffect(() => {
-<<<<<<< HEAD
     const fetchData = async () => {
       try {
         const res = await axiosClient.get('/master-data/entity-groups');
@@ -34,10 +28,6 @@ const PartnerGroupPage = () => {
 
     fetchData();
   }, [reload]);
-=======
-    fetchData();
-  }, []);
->>>>>>> 766536d (newupdate)
 
   const fetchData = async () => {
     try {
@@ -54,7 +44,6 @@ const PartnerGroupPage = () => {
     setIsFormOpen(true);
   };
 
-<<<<<<< HEAD
   const handleEdit = (index) => {
     setEditIndex(index);
     setIsFormOpen(true);
@@ -105,55 +94,6 @@ const PartnerGroupPage = () => {
     setReload(!reload);
   };
 
-=======
-  // Khi ấn "Lưu" trong form
-  const handleSave = async (newData) => {
-    try {
-      const response = await axiosClient.post("/master-data/entity-groups", newData);
-      setData([...data, response.data]); // Cập nhật danh sách ngay lập tức
-      setIsFormOpen(false);
-    } catch (error) {
-      console.error("Lỗi khi lưu dữ liệu:", error);
-    }
-  };
-
-  // Khi ấn "Sửa"
-  const handleEdit = (entity) => {
-    console.log("Sửa nhóm:", entity); // Debug
-    setSelectedEntity(entity);
-    setIsFormOpen(true);
-  };
-  
-  // Khi ấn "Lưu" sau khi sửa
-  const handleUpdate = async (updatedData) => {
-    try {
-      const response = await axiosClient.put(`/master-data/entity-groups/${updatedData.id}`, updatedData);
-      const updatedItem = response.data; // Lấy dữ liệu mới từ API
-  
-      setData(data.map(item => (item.id === updatedItem.id ? updatedItem : item)));
-  
-      setIsFormOpen(false); // Đóng form
-    } catch (error) {
-      console.error("Lỗi khi cập nhật dữ liệu:", error);
-    }
-  };
-
-  // Khi ấn "Xóa"
-  const handleDelete = async (id) => {
-    if (!window.confirm("Bạn có chắc chắn muốn xóa nhóm này?")) return;
-    
-    try {
-      await axiosClient.delete(`/master-data/entity-groups/${id}`);
-      
-      // Cập nhật danh sách sau khi xóa
-      setData(data.filter(item => item.id !== id));
-      
-    } catch (error) {
-      console.error("Lỗi khi xóa dữ liệu:", error);
-    }
-  };
-
->>>>>>> 766536d (newupdate)
   return (
     <Container fluid>
       <Row className="mt-3">
