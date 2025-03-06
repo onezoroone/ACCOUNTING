@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Table, Button } from "react-bootstrap";
 import PartnersModal from "./PartnersModal";
 import axiosClient from "../libs/axios-client";
+import PropTypes from "prop-types"; 
 
 const PartnerList = ({ data, setData }) => {
   const [isModalOpen, setModalOpen] = useState(false);
@@ -33,16 +34,37 @@ const PartnerList = ({ data, setData }) => {
     }
   };
 
-  const handleSave = (entity) => {
-    if (editIndex !== null) {
-      const updatedData = [...data];
-      updatedData[editIndex] = entity;
-      setData(updatedData);
-    } else {
-      setData([...data, entity]);
+  const handleSave = async (entity) => {
+    try {
+      let response;
+      
+      if (editIndex !== null) {
+        // Gọi API cập nhật
+        response = await axiosClient.put(`/master-data/entities/${entity.id}`, entity);
+      } else {
+        // Gọi API thêm mới
+        response = await axiosClient.post("/master-data/entities", entity);
+      }
+  
+      if (response.status === 200) {
+        alert("Lưu thành công!");
+        
+        // Cập nhật danh sách với dữ liệu từ Backend
+        setData((prevData) => {
+          if (editIndex !== null) {
+            return prevData.map((item) => (item.id === entity.id ? response.data : item));
+          } else {
+            return [...prevData, response.data];
+          }
+        });
+  
+        setModalOpen(false);
+      }
+    } catch (error) {
+      alert("Lỗi khi lưu! " + (error.response?.data?.message || "Vui lòng thử lại."));
     }
-    setModalOpen(false);
   };
+  
 
   return (
     <div className="table-responsive">
@@ -93,5 +115,18 @@ const PartnerList = ({ data, setData }) => {
     </div>
   );
 };
-
+PartnerList.propTypes = {
+  data: PropTypes.arrayOf(PropTypes.shape({
+    taxCode: PropTypes.string,
+    entityCode: PropTypes.string,
+    entityName: PropTypes.string,
+    entityGroupCode: PropTypes.string,
+    address: PropTypes.string,
+    phoneNumber: PropTypes.string,
+    email: PropTypes.string
+  })).isRequired,
+    onEdit: PropTypes.func.isRequired,
+    onDelete: PropTypes.func.isRequired,
+    onAdd: PropTypes.func.isRequired
+};
 export default PartnerList;
