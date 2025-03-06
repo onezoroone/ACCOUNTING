@@ -1,41 +1,102 @@
-import React, { useState } from "react";
-import PropTypes from "prop-types";
+import React, { useState, useEffect } from "react";
 import { Modal, Button, Form, Row, Col } from "react-bootstrap";
-import "bootstrap/dist/css/bootstrap.min.css";
+import PropTypes from "prop-types";
 
-const PartnerGroupForm = ({ onSubmit, onClose, initialData }) => {
-  const [formData, setFormData] = useState(
-    initialData || { entityCode: "", entityGroupName: "", parentCode: ""}
-  );
+const PartnerGroupForm = ({ isOpen, onClose, onSave, initialData }) => {
+  const initialFormData = {
+    entityGroupName: "",
+    entityCode: "",
+    parentCode: "",
+  };
 
+  const [formData, setFormData] = useState(initialFormData);
+  const [errors, setErrors] = useState({});
+
+  // Reset form khi mở modal
+  useEffect(() => {
+    if (isOpen) {
+      setFormData(initialData || initialFormData);
+      setErrors({});
+    }
+  }, [isOpen, initialData]);
+
+  // Kiểm tra lỗi
+  const validate = () => {
+    let newErrors = {};
+    Object.keys(formData).forEach((key) => {
+      if (!formData[key] && key !== "parentCode") {
+        newErrors[key] = "Trường này không được để trống";
+      }
+    });
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  // Cập nhật dữ liệu nhập vào
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+
+    // Xóa lỗi chỉ của trường đang nhập
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [name]: value ? "" : prevErrors[name],
+    }));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit(formData);
+    if (validate()) {
+      if (initialData) {
+        onSave({ ...formData, id: initialData.id }); // Gọi update nếu có ID
+      } else {
+        onSave(formData); // Gọi create nếu không có ID
+      }
+      onClose();
+    }
   };
+  
 
   return (
-    <Modal show onHide={onClose} centered>
+    <Modal show={isOpen} onHide={onClose} centered>
       <Modal.Header closeButton>
-        <Modal.Title>Thông tin nhóm đối tượng</Modal.Title>
+        <Modal.Title>
+          {initialData ? "Chỉnh sửa nhóm đối tượng" : "Thêm nhóm đối tượng mới"}
+        </Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <Form onSubmit={handleSubmit}>
-
           <Row className="mb-3">
-            <Col md={6}>
-              <Form.Group controlId="entityCode">
-                <Form.Label>Mã nhóm đối tượng</Form.Label>
-                <Form.Control type="text" name="entityCode" value={formData.entityCode} onChange={handleChange} />
-              </Form.Group>
-            </Col>
             <Col md={6}>
               <Form.Group controlId="entityGroupName">
                 <Form.Label>Tên nhóm đối tượng</Form.Label>
-                <Form.Control type="text" name="entityGroupName" value={formData.entityGroupName} onChange={handleChange} />
+                <Form.Control
+                  type="text"
+                  name="entityGroupName"
+                  value={formData.entityGroupName}
+                  onChange={handleChange}
+                  isInvalid={!!errors.entityGroupName}
+                  placeholder="Nhập tên nhóm"
+                />
+                <Form.Control.Feedback type="invalid">
+                  {errors.entityGroupName}
+                </Form.Control.Feedback>
+              </Form.Group>
+            </Col>
+            <Col md={6}>
+              <Form.Group controlId="entityCode">
+                <Form.Label>Mã nhóm đối tượng</Form.Label>
+                <Form.Control
+                  type="text"
+                  name="entityCode"
+                  value={formData.entityCode}
+                  onChange={handleChange}
+                  isInvalid={!!errors.entityCode}
+                  placeholder="Nhập mã nhóm"
+                />
+                <Form.Control.Feedback type="invalid">
+                  {errors.entityCode}
+                </Form.Control.Feedback>
               </Form.Group>
             </Col>
           </Row>
@@ -44,33 +105,39 @@ const PartnerGroupForm = ({ onSubmit, onClose, initialData }) => {
             <Col md={6}>
               <Form.Group controlId="parentCode">
                 <Form.Label>Mã mẹ</Form.Label>
-                <Form.Control type="text" name="parentCode" value={formData.parentCode} onChange={handleChange} />
+                <Form.Control
+                  type="text"
+                  name="parentCode"
+                  value={formData.parentCode}
+                  onChange={handleChange}
+                  placeholder="(Không bắt buộc)"
+                />
               </Form.Group>
             </Col>
           </Row>
 
-          <div className="d-flex justify-content-end mt-3">
-            <Button variant="secondary" onClick={onClose} className="me-2">
-              Hủy
+          <Modal.Footer>
+            <Button variant="secondary" onClick={onClose}>
+              Đóng
             </Button>
             <Button type="submit" variant="primary">
               Lưu
             </Button>
-          </div>
+          </Modal.Footer>
         </Form>
       </Modal.Body>
     </Modal>
   );
 };
 
-PartnerGroupForm.PropTypes = {
-    onSubmit: PropTypes.func.isRequired,
-    onClose: PropTypes.func.isRequired,
-    initialData: PropTypes.shape({
-      entityCode: PropTypes.string,
-      entityGroupName: PropTypes.string,
-      parentCode: PropTypes.string,
-    }),
+PartnerGroupForm.propTypes = {
+  isOpen: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  onSave: PropTypes.func.isRequired,
+  initialData: PropTypes.shape({
+    entityGroupName: PropTypes.string,
+    entityCode: PropTypes.string,
+    parentCode: PropTypes.string,
+  }),
 };
-
 export default PartnerGroupForm;
