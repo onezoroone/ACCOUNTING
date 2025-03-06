@@ -22,11 +22,11 @@ public class VoucherDetail {
     private Voucher voucher;
 
     @ManyToOne
-    @JoinColumn(name = "account_debit", nullable = false)
+    @JoinColumn(name = "account_debit", referencedColumnName = "id", nullable = false)
     private Account accountDebit;
 
     @ManyToOne
-    @JoinColumn(name = "account_credit", nullable = false)
+    @JoinColumn(name = "account_credit", referencedColumnName = "id", nullable = false)
     private Account accountCredit;
 
     @Column(name = "amount", nullable = false)

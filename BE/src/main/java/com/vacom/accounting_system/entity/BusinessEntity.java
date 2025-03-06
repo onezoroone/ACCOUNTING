@@ -33,4 +33,7 @@ public class BusinessEntity {
 
     @Column(name = "email")
     private String email;
+
+    @Column(name = "website")
+    private String website;
 }

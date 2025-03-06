@@ -1,20 +1,27 @@
 package com.vacom.accounting_system.controller;
 
+import java.util.stream.Collectors;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.vacom.accounting_system.dto.request.LoginRequest;
 import com.vacom.accounting_system.dto.request.RegisterRequest;
 import com.vacom.accounting_system.dto.response.AuthResponse;
 import com.vacom.accounting_system.service.AuthService;
+
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -22,6 +29,7 @@ import java.util.stream.Collectors;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Slf4j
 @Tag(name = "Xác thực", description = "API xác thực người dùng")
+@CrossOrigin(origins = "http://localhost:5173/", maxAge = 3600)
 public class AuthController {
 
     private final AuthService authService;

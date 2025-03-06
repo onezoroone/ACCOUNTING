@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "vouchers")
@@ -51,4 +52,7 @@ public class Voucher {
 
     @Column(name = "printed", nullable = false)
     private Boolean printed;
+
+    @OneToMany(mappedBy = "voucher", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<VoucherDetail> details;
 }
