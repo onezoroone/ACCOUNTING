@@ -165,7 +165,7 @@ function Navbar() {
                                     </li>
                                     <li className={`nav-item ${location.pathname === "/balancereports" ? "active" : ""}`}>
                                         <Link className="nav-link d-flex align-items-center" to="/balancereports">
-                                            <span className="menu-title">Bảng cân đối phát sinh</span>
+                                            <span className="menu-title">Báo cáo sổ cân đối phát sinh</span>
                                         </Link>
                                     </li>
                                 </ul>

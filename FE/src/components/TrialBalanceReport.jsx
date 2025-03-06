@@ -31,14 +31,12 @@ const ReportPage = () => {
       {/* Thanh công cụ trên */}
       <Row className="d-flex justify-content-between align-items-center mb-3">
         <Col xs="auto">
-          <h5 className="m-0 fw-bold text-dark">Báo cáo chi tiết tài khoản</h5>
+          <h5 className="m-0 fw-bold text-dark">Báo cáo sổ cân đối phát sinh</h5>
         </Col>
         <Col xs="auto" className="d-flex gap-2">
           <Button variant="success" size="sm">Xuất</Button>
           <Button variant="info" size="sm">In</Button>
-          <Button variant="warning" size="sm" onClick={() => window.location.reload()}>
-            <FaSyncAlt />
-          </Button>
+          <Button variant="warning" size="sm"><FaSyncAlt /></Button>
         </Col>
       </Row>
 
@@ -93,11 +91,11 @@ const ReportPage = () => {
           <tr>
             <th>#</th>
             <th>Mã tài khoản</th>
-            <th>Ngày bắt đầu</th>
-            <th>Ngày kết thúc</th>
-            <th>Số chứng từ</th>
-            <th>Mô tả</th>
-            <th>Tài khoản đối ứng</th>
+            <th>Tên tài khoản</th>
+            <th>Số dư đầu kỳ</th>
+            <th>TK nợ</th>
+            <th>TK có</th>
+            <th>Số dư cuối kỳ</th>
           </tr>
         </thead>
       </Table>

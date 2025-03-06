@@ -11,7 +11,7 @@ import CurrenciesForm from "./components/CurrenciesForm";
 import PartnerGroupPage from "./pages/PartnerGroupPage";
 import VoucherManagementForm from "./components/VoucherManagementForm";
 import AccountDetailReport from "./components/AccountDetailReport";
-import BalanceReport from "./components/BalanceReport";
+import TrialBalanceReport from "./components/TrialBalanceReport";
 import UserPage from "./pages/UserPage";
 
 const router = createBrowserRouter([
@@ -57,7 +57,7 @@ const router = createBrowserRouter([
             },
             {
                 path: '/balancereports',
-                element: <BalanceReport />
+                element: <TrialBalanceReport />
             },
             {
                 path: '/partnergroups',
