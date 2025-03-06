@@ -47,7 +47,7 @@ public class TrialBalanceService {
 
     public TrialBalanceDTO getTrialBalanceByAccountCode(String accountCode, Date startDate, Date endDate) {
         Account account = accountRepository.findByAccountCode(accountCode)
-                .orElseThrow(() -> new RuntimeException("Account not found"));
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy sổ kế toán"));
         List<VoucherDetail> openingDetails = voucherDetailRepository.findByVoucherVoucherDateBefore(startDate);
         List<VoucherDetail> periodDetails = voucherDetailRepository.findByVoucherVoucherDateBetween(startDate, endDate);
 

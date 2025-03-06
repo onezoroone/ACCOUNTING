@@ -21,12 +21,16 @@ public class AccountService {
 
     // Tạo mới tài khoản
     public Account createAccount(Account account) {
+        Optional<Account> existingAccount = accountRepository.findByAccountCode(account.getAccountCode());
+        if (existingAccount.isPresent()) {
+            throw new RuntimeException("Tài khoản đã tồn tại");
+        }
         return accountRepository.save(account);
     }
 
     // Cập nhật tài khoản
     public Account updateAccount(Integer id, Account accountDetails) {
-        Account account = accountRepository.findById(id).orElseThrow(() -> new RuntimeException("Account not found"));
+        Account account = accountRepository.findById(id).orElseThrow(() -> new RuntimeException("Không tìn thấy tài khoản"));
         account.setAccountCode(accountDetails.getAccountCode());
         account.setAccountName(accountDetails.getAccountName());
         account.setAccountType(accountDetails.getAccountType());
@@ -36,11 +40,16 @@ public class AccountService {
 
     // Xóa tài khoản
     public void deleteAccount(Integer id) {
+        Account account = accountRepository.findById(id).orElseThrow(() -> new RuntimeException("Không tìn thấy tài khoản"));
         accountRepository.deleteById(id);
     }
 
     // Tìm tài khoản theo mã tài khoản
     public Optional<Account> getAccountByCode(String accountCode) {
+        Optional<Account> account = accountRepository.findByAccountCode(accountCode);
+        if (!account.isPresent()) {
+            throw new RuntimeException("Không tìm thấy tài khoản với mã: " + accountCode);
+        }
         return accountRepository.findByAccountCode(accountCode);
     }
 }
