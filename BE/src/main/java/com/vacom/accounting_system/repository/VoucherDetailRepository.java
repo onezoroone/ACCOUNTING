@@ -20,4 +20,5 @@ public interface VoucherDetailRepository extends JpaRepository<VoucherDetail, In
 
     List<VoucherDetail> findByVoucherVoucherDateBefore(Date date);
     List<VoucherDetail> findByAccountDebitAccountCodeInOrAccountCreditAccountCodeIn(List<String> debitCodes, List<String> creditCodes);
+    void deleteByVoucher_Id(Integer id);
 }

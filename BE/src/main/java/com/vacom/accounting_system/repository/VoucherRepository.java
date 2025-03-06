@@ -12,4 +12,5 @@ import java.util.List;
 
 public interface VoucherRepository extends JpaRepository<Voucher, Integer> {
     Page<Voucher> findByVoucherDateBetween(Date startDate, Date endDate, Pageable pageable);
+    boolean existsByVoucherNumber(String voucherNumber);
 }

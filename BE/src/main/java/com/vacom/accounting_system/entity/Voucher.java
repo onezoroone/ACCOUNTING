@@ -44,14 +44,16 @@ public class Voucher {
     @Column(name = "total_amount_origin", nullable = false)
     private Double totalAmountOrigin;
 
-    @Column(name = "entity_code")
+    @Column(name = "entity_code", nullable = false)
     private String entityCode;
 
-    @Column(name = "created_by", nullable = false)
+    @Column(name = "created_by")
     private Integer createdBy;
 
     @Column(name = "printed", nullable = false)
     private Boolean printed;
+
+
 
     @OneToMany(mappedBy = "voucher", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<VoucherDetail> details;
