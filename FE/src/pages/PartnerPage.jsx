@@ -1,13 +1,24 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Container, Row, Col } from "react-bootstrap";
 import PartnerList from "../components/PartnerList";
 import PartnersModal from "../components/PartnersModal";
+import axiosClient from "../libs/axios-client";
 
 const PartnerPage = ()=> {
 
   const [data, setData] = useState([]);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editIndex, setEditIndex] = useState(null);
+
+  useEffect(() => {
+    const getData = async () => {
+      axiosClient.get('/master-data/entities')
+      .then((res) => {
+        setData(res.data.content);
+      });
+    }
+    getData();
+  }, [])
 
   const handleAdd = () => {
     setEditIndex(null);
@@ -40,7 +51,7 @@ const PartnerPage = ()=> {
 
       <Row className="table-container">
         <Col xs={12} className="table-responsive">
-          <PartnerList data={data} onEdit={handleEdit} onDelete={handleDelete} onAdd={handleAdd} />
+          <PartnerList data={data} setData={setData} />
         </Col>
       </Row>
 

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Table, Button } from "react-bootstrap";
 import PartnersModal from "./PartnersModal";
+import axiosClient from "../libs/axios-client";
 
 const PartnerList = ({ data, setData }) => {
   const [isModalOpen, setModalOpen] = useState(false);
@@ -19,11 +20,16 @@ const PartnerList = ({ data, setData }) => {
     setModalOpen(true);
   };
 
-  const handleDelete = (index) => {
-    if (window.confirm("Bạn có chắc chắn muốn xóa đối tượng này không?")) {
-      const newData = [...data];
-      newData.splice(index, 1);
-      setData(newData);
+  const handleDelete = async (item) => {
+    if (window.confirm(`Bạn có chắc chắn muốn xóa đối tượng ${item.entityName} không?`)) {
+
+      await axiosClient.delete('/master-data/entities/' + item.id)
+      .then(() => {
+        alert('Xóa đối tượng thành công');
+        setData(prevData => prevData.filter(entity => entity.id !== item.id));
+      }).catch((err) => {
+        alert("Lỗi khi xóa!");
+      })
     }
   };
 
@@ -51,22 +57,25 @@ const PartnerList = ({ data, setData }) => {
             <th>Địa chỉ</th>
             <th>Số điện thoại</th>
             <th>Email</th>
-            <th>Hành động</th>
+            <th></th>
+            <th></th>
           </tr>
         </thead>
         <tbody>
           {data.map((item, index) => (
             <tr key={index}>
               <td>{index + 1}</td>
-              <td>{item.tax_code}</td>
-              <td>{item.entity_code}</td>
-              <td>{item.entity_name}</td>
+              <td>{item.taxCode}</td>
+              <td>{item.entityCode}</td>
+              <td>{item.entityName}</td>
               <td>{item.address}</td>
-              <td>{item.phone_number}</td>
+              <td>{item.phoneNumber}</td>
               <td>{item.email}</td>
               <td>
-                <Button variant="warning" size="sm" onClick={() => handleEdit(index)}>✏️</Button>{' '}
-                <Button variant="danger" size="sm" onClick={() => handleDelete(index)}>🗑️</Button>
+                <Button variant="white" size="sm" onClick={() => handleEdit(index)}>✏️</Button>{' '}
+              </td>
+              <td>
+              <Button variant="white" size="sm" onClick={() => handleDelete(item)}>🗑️</Button>
               </td>
             </tr>
           ))}
