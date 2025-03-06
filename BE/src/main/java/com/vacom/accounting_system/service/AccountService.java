@@ -48,7 +48,7 @@ public class AccountService {
     public Optional<Account> getAccountByCode(String accountCode) {
         Optional<Account> account = accountRepository.findByAccountCode(accountCode);
         if (!account.isPresent()) {
-            throw new RuntimeException("Không tìm thấy tài khoản với mã: " + accountCode);
+            throw new RuntimeException("Không tìm thấy tài khoản mã: " + accountCode);
         }
         return accountRepository.findByAccountCode(accountCode);
     }
