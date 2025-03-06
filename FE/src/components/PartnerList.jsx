@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Table, Button } from "react-bootstrap";
 import PartnersModal from "./PartnersModal";
+import axiosClient from "../libs/axios-client";
+import PropTypes from "prop-types"; 
 
 const PartnerList = ({ data, setData }) => {
   const [isModalOpen, setModalOpen] = useState(false);
@@ -19,24 +21,50 @@ const PartnerList = ({ data, setData }) => {
     setModalOpen(true);
   };
 
-  const handleDelete = (index) => {
-    if (window.confirm("Bạn có chắc chắn muốn xóa đối tượng này không?")) {
-      const newData = [...data];
-      newData.splice(index, 1);
-      setData(newData);
+  const handleDelete = async (item) => {
+    if (window.confirm(`Bạn có chắc chắn muốn xóa đối tượng ${item.entityName} không?`)) {
+
+      await axiosClient.delete('/master-data/entities/' + item.id)
+      .then(() => {
+        alert('Xóa đối tượng thành công');
+        setData(prevData => prevData.filter(entity => entity.id !== item.id));
+      }).catch((err) => {
+        alert("Lỗi khi xóa!");
+      })
     }
   };
 
-  const handleSave = (entity) => {
-    if (editIndex !== null) {
-      const updatedData = [...data];
-      updatedData[editIndex] = entity;
-      setData(updatedData);
-    } else {
-      setData([...data, entity]);
+  const handleSave = async (entity) => {
+    try {
+      let response;
+      
+      if (editIndex !== null) {
+        // Gọi API cập nhật
+        response = await axiosClient.put(`/master-data/entities/${entity.id}`, entity);
+      } else {
+        // Gọi API thêm mới
+        response = await axiosClient.post("/master-data/entities", entity);
+      }
+  
+      if (response.status === 200) {
+        alert("Lưu thành công!");
+        
+        // Cập nhật danh sách với dữ liệu từ Backend
+        setData((prevData) => {
+          if (editIndex !== null) {
+            return prevData.map((item) => (item.id === entity.id ? response.data : item));
+          } else {
+            return [...prevData, response.data];
+          }
+        });
+  
+        setModalOpen(false);
+      }
+    } catch (error) {
+      alert("Lỗi khi lưu! " + (error.response?.data?.message || "Vui lòng thử lại."));
     }
-    setModalOpen(false);
   };
+  
 
   return (
     <div className="table-responsive">
@@ -51,22 +79,25 @@ const PartnerList = ({ data, setData }) => {
             <th>Địa chỉ</th>
             <th>Số điện thoại</th>
             <th>Email</th>
-            <th>Hành động</th>
+            <th></th>
+            <th></th>
           </tr>
         </thead>
         <tbody>
           {data.map((item, index) => (
             <tr key={index}>
               <td>{index + 1}</td>
-              <td>{item.tax_code}</td>
-              <td>{item.entity_code}</td>
-              <td>{item.entity_name}</td>
+              <td>{item.taxCode}</td>
+              <td>{item.entityCode}</td>
+              <td>{item.entityName}</td>
               <td>{item.address}</td>
-              <td>{item.phone_number}</td>
+              <td>{item.phoneNumber}</td>
               <td>{item.email}</td>
               <td>
-                <Button variant="warning" size="sm" onClick={() => handleEdit(index)}>✏️</Button>{' '}
-                <Button variant="danger" size="sm" onClick={() => handleDelete(index)}>🗑️</Button>
+                <Button variant="white" size="sm" onClick={() => handleEdit(index)}>✏️</Button>{' '}
+              </td>
+              <td>
+              <Button variant="white" size="sm" onClick={() => handleDelete(item)}>🗑️</Button>
               </td>
             </tr>
           ))}
@@ -84,5 +115,18 @@ const PartnerList = ({ data, setData }) => {
     </div>
   );
 };
-
+PartnerList.propTypes = {
+  data: PropTypes.arrayOf(PropTypes.shape({
+    taxCode: PropTypes.string,
+    entityCode: PropTypes.string,
+    entityName: PropTypes.string,
+    entityGroupCode: PropTypes.string,
+    address: PropTypes.string,
+    phoneNumber: PropTypes.string,
+    email: PropTypes.string
+  })).isRequired,
+    onEdit: PropTypes.func.isRequired,
+    onDelete: PropTypes.func.isRequired,
+    onAdd: PropTypes.func.isRequired
+};
 export default PartnerList;

@@ -1,39 +1,47 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Modal, Button, Form, Row, Col } from "react-bootstrap";
+import PropTypes from "prop-types";
 
-const PartnersModal = ({ isOpen, onClose, onSave, onSubmit, initialData }) => {
+const PartnersModal = ({ isOpen, onClose, onSave, initialData }) => {
   const initialFormData = {
-    entity_group_code: "",
-    tax_code: "",
-    entity_code: "",
-    entity_name: "",
+    entityGroupCode: "",
+    taxCode: "",
+    entityCode: "",
+    entityName: "",
     address: "",
-    contact_person: "",
-    full_name: "",
-    legal_representative: "",
-    phone_number: "",
-    email: "",
-    website: "",
+    phoneNumber: "",
+    email: ""
   };
 
   const [formData, setFormData] = useState(initialFormData);
   const [errors, setErrors] = useState({});
 
+  // Cập nhật form khi mở modal chỉnh sửa
+  useEffect(() => {
+    if (initialData) {
+      setFormData(initialData);
+    } else {
+      setFormData(initialFormData);
+    }
+    setErrors({}); // Reset lỗi khi mở modal
+  }, [initialData, isOpen]);
+
   const validate = () => {
     let newErrors = {};
 
+    // Kiểm tra các trường bắt buộc
     Object.keys(formData).forEach((key) => {
-      if (!formData[key] && key !== "website") {
+      if (!formData[key] && key !== "entityGroupCode" && key !== "phoneNumber" && key !== "email") {
         newErrors[key] = "Trường này không được để trống";
       }
     });
 
     if (formData.email && !/\S+@\S+\.\S+/.test(formData.email)) {
       newErrors.email = "Email không hợp lệ";
-    }
+    }    
 
-    if (formData.phone_number && !/^\d{10,11}$/.test(formData.phone_number)) {
-      newErrors.phone_number = "Số điện thoại không hợp lệ";
+    if (formData.phoneNumber && !/^\d{10,11}$/.test(formData.phoneNumber)) {
+      newErrors.phoneNumber = "Số điện thoại không hợp lệ";
     }
 
     setErrors(newErrors);
@@ -45,14 +53,11 @@ const PartnersModal = ({ isOpen, onClose, onSave, onSubmit, initialData }) => {
     setErrors({ ...errors, [e.target.name]: "" }); // Xóa lỗi khi nhập
   };
 
-  const handleSave = (resetAfterSave = false) => {
+  const handleSubmit = (e) => {
+    e.preventDefault();
     if (validate()) {
       onSave(formData);
-      if (resetAfterSave) {
-        setFormData(initialFormData);
-      } else {
-        onClose();
-      }
+      onClose(); // Đóng modal sau khi gửi thành công
     }
   };
 
@@ -63,21 +68,17 @@ const PartnersModal = ({ isOpen, onClose, onSave, onSubmit, initialData }) => {
       </Modal.Header>
 
       <Modal.Body>
-        <Form>
+        <Form onSubmit={handleSubmit}>
           <Row className="mb-3">
             <Col>
               <Form.Group>
                 <Form.Label>Nhóm đối tượng</Form.Label>
                 <Form.Control
                   type="text"
-                  name="entity_group_code"
-                  value={formData.entity_group_code}
+                  name="entityGroupCode"
+                  value={formData.entityGroupCode}
                   onChange={handleChange}
-                  isInvalid={!!errors.entity_group_code}
                 />
-                <Form.Control.Feedback type="invalid">
-                  {errors.entity_group_code}
-                </Form.Control.Feedback>
               </Form.Group>
             </Col>
             <Col>
@@ -85,13 +86,13 @@ const PartnersModal = ({ isOpen, onClose, onSave, onSubmit, initialData }) => {
                 <Form.Label>Mã số thuế</Form.Label>
                 <Form.Control
                   type="text"
-                  name="tax_code"
-                  value={formData.tax_code}
+                  name="taxCode"
+                  value={formData.taxCode}
                   onChange={handleChange}
-                  isInvalid={!!errors.tax_code}
+                  isInvalid={!!errors.taxCode}
                 />
                 <Form.Control.Feedback type="invalid">
-                  {errors.tax_code}
+                  {errors.taxCode}
                 </Form.Control.Feedback>
               </Form.Group>
             </Col>
@@ -103,13 +104,13 @@ const PartnersModal = ({ isOpen, onClose, onSave, onSubmit, initialData }) => {
                 <Form.Label>Mã đối tượng</Form.Label>
                 <Form.Control
                   type="text"
-                  name="entity_code"
-                  value={formData.entity_code}
+                  name="entityCode"
+                  value={formData.entityCode}
                   onChange={handleChange}
-                  isInvalid={!!errors.entity_code}
+                  isInvalid={!!errors.entityCode}
                 />
                 <Form.Control.Feedback type="invalid">
-                  {errors.entity_code}
+                  {errors.entityCode}
                 </Form.Control.Feedback>
               </Form.Group>
             </Col>
@@ -118,13 +119,13 @@ const PartnersModal = ({ isOpen, onClose, onSave, onSubmit, initialData }) => {
                 <Form.Label>Tên đối tượng</Form.Label>
                 <Form.Control
                   type="text"
-                  name="entity_name"
-                  value={formData.entity_name}
+                  name="entityName"
+                  value={formData.entityName}
                   onChange={handleChange}
-                  isInvalid={!!errors.entity_name}
+                  isInvalid={!!errors.entityName}
                 />
                 <Form.Control.Feedback type="invalid">
-                  {errors.entity_name}
+                  {errors.entityName}
                 </Form.Control.Feedback>
               </Form.Group>
             </Col>
@@ -144,112 +145,60 @@ const PartnersModal = ({ isOpen, onClose, onSave, onSubmit, initialData }) => {
             </Form.Control.Feedback>
           </Form.Group>
 
-          <h5>Thông tin liên hệ</h5>
+          <Form.Group className="mb-3">
+            <Form.Label>Số điện thoại</Form.Label>
+            <Form.Control
+              type="text"
+              name="phoneNumber"
+              value={formData.phoneNumber}
+              onChange={handleChange}
+              isInvalid={!!errors.phoneNumber}
+            />
+            <Form.Control.Feedback type="invalid">
+              {errors.phoneNumber}
+            </Form.Control.Feedback>
+          </Form.Group>
 
-          <Row className="mb-3">
-            <Col>
-              <Form.Group>
-                <Form.Label>Người liên hệ</Form.Label>
-                <Form.Control
-                  type="text"
-                  name="contact_person"
-                  value={formData.contact_person}
-                  onChange={handleChange}
-                  isInvalid={!!errors.contact_person}
-                />
-                <Form.Control.Feedback type="invalid">
-                  {errors.contact_person}
-                </Form.Control.Feedback>
-              </Form.Group>
-            </Col>
-            <Col>
-              <Form.Group>
-                <Form.Label>Họ và tên</Form.Label>
-                <Form.Control
-                  type="text"
-                  name="full_name"
-                  value={formData.full_name}
-                  onChange={handleChange}
-                  isInvalid={!!errors.full_name}
-                />
-                <Form.Control.Feedback type="invalid">
-                  {errors.full_name}
-                </Form.Control.Feedback>
-              </Form.Group>
-            </Col>
-            <Col>
-              <Form.Group>
-                <Form.Label>Đại diện pháp luật</Form.Label>
-                <Form.Control
-                  type="text"
-                  name="legal_representative"
-                  value={formData.legal_representative}
-                  onChange={handleChange}
-                  isInvalid={!!errors.legal_representative}
-                />
-                <Form.Control.Feedback type="invalid">
-                  {errors.legal_representative}
-                </Form.Control.Feedback>
-              </Form.Group>
-            </Col>
-          </Row>
-
-          <Row className="mb-3">
-            <Col>
-              <Form.Group>
-                <Form.Label>Số điện thoại</Form.Label>
-                <Form.Control
-                  type="text"
-                  name="phone_number"
-                  value={formData.phone_number}
-                  onChange={handleChange}
-                  isInvalid={!!errors.phone_number}
-                />
-                <Form.Control.Feedback type="invalid">
-                  {errors.phone_number}
-                </Form.Control.Feedback>
-              </Form.Group>
-            </Col>
-            <Col>
-              <Form.Group>
-                <Form.Label>Email</Form.Label>
-                <Form.Control
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  isInvalid={!!errors.email}
-                />
-                <Form.Control.Feedback type="invalid">
-                  {errors.email}
-                </Form.Control.Feedback>
-              </Form.Group>
-            </Col>
-            <Col>
-              <Form.Group>
-                <Form.Label>Website</Form.Label>
-                <Form.Control
-                  type="text"
-                  name="website"
-                  value={formData.website}
-                  onChange={handleChange}
-                />
-              </Form.Group>
-            </Col>
-          </Row>
+          <Form.Group className="mb-3">
+            <Form.Label>Email</Form.Label>
+            <Form.Control
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              isInvalid={!!errors.email}
+            />
+            <Form.Control.Feedback type="invalid">
+              {errors.email}
+            </Form.Control.Feedback>
+          </Form.Group>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={onClose}>
+              Đóng
+            </Button>
+            <Button type="submit" variant="primary">
+              Lưu
+            </Button>
+          </Modal.Footer>
         </Form>
       </Modal.Body>
-
-      <Modal.Footer>
-        <Button variant="secondary" onClick={onClose}>
-          Đóng
-        </Button>
-        <Button  type="submit" variant="primary" onClick={() => handleSave(false)}>
-          Lưu
-        </Button>
-      </Modal.Footer>
     </Modal>
   );
+};
+
+PartnersModal.propTypes = {
+  isOpen: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  onSubmit: PropTypes.func.isRequired,
+  initialData: PropTypes.shape({
+    taxCode: PropTypes.string,
+    entityCode: PropTypes.string,
+    entityName: PropTypes.string,
+    entityGroupCode: PropTypes.string,
+    address: PropTypes.string,
+    phoneNumber: PropTypes.string,
+    email: PropTypes.string
+  })
 };
 
 export default PartnersModal;
