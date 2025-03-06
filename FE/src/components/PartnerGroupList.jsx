@@ -1,5 +1,6 @@
 import React from "react";
 import { Table, Button } from "react-bootstrap";
+import PropTypes from 'prop-types';
 
 const PartnerGroupList = ({ data, onEdit, onDelete, onAdd }) => {
   return (
@@ -20,11 +21,11 @@ const PartnerGroupList = ({ data, onEdit, onDelete, onAdd }) => {
           {data.map((item, index) => (
             <tr key={item.id}>
               <td>{index + 1}</td>
-              <td>{item.entity_group_code}</td>
-              <td>{item.entity_group_name}</td>
-              <td>{item.parent_code}</td>
+              <td>{item.entityCode}</td>
+              <td>{item.entityGroupName}</td>
+              <td>{item.parentCode}</td>
               <td>
-                <Button variant="warning" size="sm" onClick={() => onEdit(item)}>✏️</Button>
+                <Button variant="warning" size="sm" onClick={() => onEdit(index)}>✏️</Button>
               </td>
               <td>
                 <Button variant="danger" size="sm" onClick={() => onDelete(item.id)}>🗑️</Button>
@@ -38,6 +39,17 @@ const PartnerGroupList = ({ data, onEdit, onDelete, onAdd }) => {
       </div>
     </div>
   );
+};
+
+PartnerGroupList.propTypes = {
+  data: PropTypes.arrayOf(PropTypes.shape({
+    entityCode: PropTypes.string.isRequired,
+    entityGroupName: PropTypes.string.isRequired,
+    parentCode: PropTypes.string,
+  })).isRequired,
+  onEdit: PropTypes.func.isRequired,
+  onDelete: PropTypes.func.isRequired,
+  onAdd: PropTypes.func.isRequired
 };
 
 export default PartnerGroupList;

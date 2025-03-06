@@ -1,26 +1,15 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
+import PropTypes from "prop-types";
 import { Modal, Button, Form, Row, Col } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 const PartnerGroupForm = ({ onSubmit, onClose, initialData }) => {
-  const [formData, setFormData] = useState({
-    entity_group_code: "",
-    entity_group_name: "",
-    parent_code: "",
-  });
-
-  // Cập nhật formData khi sửa dữ liệu
-  useEffect(() => {
-    setFormData({
-      entity_group_code: initialData?.entity_group_code || "",
-      entity_group_name: initialData?.entity_group_name || "",
-      parent_code: initialData?.parent_code || "",
-    });
-  }, [initialData]);
-  
+  const [formData, setFormData] = useState(
+    initialData || { entityCode: "", entityGroupName: "", parentCode: ""}
+  );
 
   const handleChange = (e) => {
-    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = (e) => {
@@ -38,41 +27,24 @@ const PartnerGroupForm = ({ onSubmit, onClose, initialData }) => {
 
           <Row className="mb-3">
             <Col md={6}>
-              <Form.Group controlId="entity_group_code">
+              <Form.Group controlId="entityCode">
                 <Form.Label>Mã nhóm đối tượng</Form.Label>
-                <Form.Control 
-                  type="text" 
-                  name="entity_group_code" 
-                  value={formData.entity_group_code} 
-                  onChange={handleChange} 
-                  required
-                />
+                <Form.Control type="text" name="entityCode" value={formData.entityCode} onChange={handleChange} />
               </Form.Group>
             </Col>
             <Col md={6}>
-              <Form.Group controlId="entity_group_name">
+              <Form.Group controlId="entityGroupName">
                 <Form.Label>Tên nhóm đối tượng</Form.Label>
-                <Form.Control 
-                  type="text" 
-                  name="entity_group_name" 
-                  value={formData.entity_group_name} 
-                  onChange={handleChange} 
-                  required
-                />
+                <Form.Control type="text" name="entityGroupName" value={formData.entityGroupName} onChange={handleChange} />
               </Form.Group>
             </Col>
           </Row>
 
           <Row className="mb-3">
             <Col md={6}>
-              <Form.Group controlId="parent_code">
+              <Form.Group controlId="parentCode">
                 <Form.Label>Mã mẹ</Form.Label>
-                <Form.Control 
-                  type="text" 
-                  name="parent_code" 
-                  value={formData.parent_code} 
-                  onChange={handleChange} 
-                />
+                <Form.Control type="text" name="parentCode" value={formData.parentCode} onChange={handleChange} />
               </Form.Group>
             </Col>
           </Row>
@@ -89,6 +61,16 @@ const PartnerGroupForm = ({ onSubmit, onClose, initialData }) => {
       </Modal.Body>
     </Modal>
   );
+};
+
+PartnerGroupForm.PropTypes = {
+    onSubmit: PropTypes.func.isRequired,
+    onClose: PropTypes.func.isRequired,
+    initialData: PropTypes.shape({
+      entityCode: PropTypes.string,
+      entityGroupName: PropTypes.string,
+      parentCode: PropTypes.string,
+    }),
 };
 
 export default PartnerGroupForm;

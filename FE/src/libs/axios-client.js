@@ -1,8 +1,13 @@
 import axios from "axios";
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 const axiosClient = axios.create({
     baseURL: "http://localhost:8080/api"
+=======
+const axiosClient = axios.create({
+    baseURL: "http://localhost:8081/api"
+>>>>>>> 4b70d78 (updatePartnerGroup)
 });
 
 axiosClient.interceptors.request.use((config) => {
@@ -10,12 +15,16 @@ axiosClient.interceptors.request.use((config) => {
     if (token) {
         config.headers.Authorization = `Bearer ${token}`;
     }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 4b70d78 (updatePartnerGroup)
     return config;
 }, (error) => {
     return Promise.reject(error);
 });
 
+<<<<<<< HEAD
 export default axiosClient;
 =======
 const API_BASE_URL = "http://localhost:8080/api/master-data/entity-groups"; // Thay bằng URL thực tế của bạn
@@ -50,3 +59,6 @@ export const deleteEntityGroup = async (id) => {
   await api.delete(`/${id}`);
 };
 >>>>>>> f894eef (update)
+=======
+export default axiosClient;
+>>>>>>> 4b70d78 (updatePartnerGroup)
