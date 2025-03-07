@@ -113,6 +113,7 @@ const PartnerGroupPage = () => {
             />
           </Col>
         </Row>
+<<<<<<< HEAD
 
       {isFormOpen && (
         <PartnerGroupForm 
@@ -124,6 +125,19 @@ const PartnerGroupPage = () => {
       )}
     </Container>
   </div>
+=======
+        {isFormOpen && (
+          <PartnerGroupForm 
+  isOpen={isFormOpen} 
+  onClose={() => setIsFormOpen(false)} 
+  onSave={handleSubmit} 
+  initialData={selectedEntity} // Truyền dữ liệu đúng
+/>
+
+        )}
+      </Container>
+    </div>
+>>>>>>> 983e440 (new update)
   );
 };
 
