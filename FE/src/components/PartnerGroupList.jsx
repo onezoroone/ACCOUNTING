@@ -36,7 +36,7 @@ const PartnerGroupList = ({ data, onAdd, onEdit, onDelete }) => {
                   <Button 
                       variant="danger" 
                       size="sm" 
-                      onClick={() => onDelete(item.id)}
+                      onClick={() => onDelete(item)}
                     >
                       🗑️
                   </Button>
