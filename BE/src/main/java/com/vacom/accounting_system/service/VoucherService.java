@@ -142,8 +142,6 @@ public class VoucherService {
         response.setEntityCode(voucher.getEntityCode());
         response.setEntityName(entity.getEntityName());
         response.setVoucherDate(voucher.getVoucherDate());
-        response.setCurrencyCode(currency.getCurrencyCode());
-        response.setTotalAmount(voucher.getTotalAmount());
         return response;
     }
 
@@ -166,11 +164,20 @@ public class VoucherService {
                 detailDTO.setAccountDebitCode(detail.getAccountDebit().getAccountCode());
                 detailDTO.setAccountCreditCode(detail.getAccountCredit().getAccountCode());
                 detailDTO.setAmount(detail.getAmount());
+                detailDTO.setCurrentCode(currency.getCurrencyCode());
+                detailDTO.setExchangeRate(currency.getExchangeRate());
+                detailDTO.setTotalAmount(detail.getAmount());
+                detailDTO.setTotalAmountOrigin(voucher.getTotalAmountOrigin());
                 return detailDTO;
             }).collect(Collectors.toList());
 
             // Thêm chi tiết vào response
             response.setDetails(detailDTOs);
+
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            User user = userRepository.findByUsername(authentication.getName())
+                    .orElseThrow(() -> new ResourceNotFoundException("Người dùng", "tên đăng nhập", authentication.getName()));
+            response.setCreateBy(user.getFullName());
 
             return response;
         });

@@ -12,7 +12,6 @@ public class VoucherResponseDTO {
     private Date voucherDate;
     private String entityCode;
     private String entityName;
-    private String currencyCode;
-    private Double totalAmount;
+    private String createBy;
     private List<VoucherDetailResponseDTO> details;
 }

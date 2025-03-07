@@ -74,6 +74,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/dashboard").hasAnyAuthority("VIEW_ACCOUNT_LEDGER", "VIEW_TRIAL_BALANCE")
                         .requestMatchers(HttpMethod.GET, "/api/users").hasAnyAuthority("VIEW_USER")
                         .requestMatchers(HttpMethod.POST, "/api/users").hasAnyAuthority("CREATE_USER")
+                        .requestMatchers(HttpMethod.PUT, "/api/users/**").hasAnyAuthority("EDIT_USER")
+                        .requestMatchers(HttpMethod.DELETE, "/api/users/**").hasAnyAuthority("EDIT_USER")
                         .requestMatchers("/api/roles/**").hasAnyAuthority("MANAGE_ROLES")
                         .requestMatchers("/api/permissions/**").hasAnyAuthority("MANAGE_PERMISSIONS")
                         .anyRequest().authenticated()
