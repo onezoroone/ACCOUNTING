@@ -123,11 +123,7 @@ const PartnerGroupPage = () => {
         )}
       </Container>
     </div>
-<<<<<<< HEAD
     );
-=======
-  );
->>>>>>> 472861b4d8720153e36965fe952df4ce6e58d40c
 };
 
 export default PartnerGroupPage;
