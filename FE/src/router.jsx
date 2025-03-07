@@ -9,7 +9,7 @@ import PaymentVoucher from "./components/PaymentVoucher";
 import OtherVoucher from "./components/OtherVoucher";
 import CurrenciesForm from "./components/CurrenciesForm";
 import PartnerGroupPage from "./pages/PartnerGroupPage";
-import VoucherManagementForm from "./components/VoucherManagementForm";
+import VouchersPage from "./pages/VouchersPage";
 import AccountDetailReport from "./components/AccountDetailReport";
 import BalanceReport from "./components/BalanceReport";
 import UserPage from "./pages/UserPage";
@@ -49,7 +49,7 @@ const router = createBrowserRouter([
             },
             {
                 path: '/vouchers',
-                element: <VoucherManagementForm />
+                element: <VouchersPage />
             },
             {
                 path: '/accountdetailreports',
