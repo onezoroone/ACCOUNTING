@@ -113,32 +113,17 @@ const PartnerGroupPage = () => {
             />
           </Col>
         </Row>
-<<<<<<< HEAD
-
-      {isFormOpen && (
-        <PartnerGroupForm 
-          isOpen={isFormOpen} 
-          onClose={() => setIsFormOpen(false)} 
-          onSave={handleSubmit} 
-          initialData={selectedEntity} // Truyền dữ liệu đúng
-        />
-      )}
-    </Container>
-  </div>
-=======
         {isFormOpen && (
           <PartnerGroupForm 
-  isOpen={isFormOpen} 
-  onClose={() => setIsFormOpen(false)} 
-  onSave={handleSubmit} 
-  initialData={selectedEntity} // Truyền dữ liệu đúng
-/>
-
+            isOpen={isFormOpen} 
+            onClose={() => setIsFormOpen(false)} 
+            onSave={handleSubmit} 
+            initialData={selectedEntity} // Truyền dữ liệu đúng
+          />
         )}
       </Container>
     </div>
->>>>>>> 983e440 (new update)
-  );
+    );
 };
 
 export default PartnerGroupPage;

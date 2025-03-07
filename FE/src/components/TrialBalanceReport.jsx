@@ -93,8 +93,8 @@ const ReportPage = () => {
             <th>Mã tài khoản</th>
             <th>Tên tài khoản</th>
             <th>Số dư đầu kỳ</th>
-            <th>TK nợ</th>
-            <th>TK có</th>
+            <th>Phát sinh nợ</th>
+            <th>Phát sinh có</th>
             <th>Số dư cuối kỳ</th>
           </tr>
         </thead>
