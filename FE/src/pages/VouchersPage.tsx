@@ -152,7 +152,7 @@ function VouchersPage() {
               <ul className="pagination">
                 {currentPagination > 0 && <li className="page-item"><button onClick={() => setCurrentPagination(currentPagination + 1)} className="page-link">&laquo;</button></li>}
                 {Array.from({length: totalPagination}, (_, index) => (
-                  <li key={index} className={`page-item ${index == currentPagination ? 'active' : ''}`}><button className="page-link">{index + 1}</button></li>
+                  <li key={index} className={`page-item ${index == currentPagination ? 'active' : ''}`}><button onClick={() => setCurrentPagination(index)} className="page-link">{index + 1}</button></li>
                 ))}
                 {currentPagination < totalPagination - 1 && <li className="page-item"><button onClick={() => setCurrentPagination(currentPagination + 1)} className="page-link">&raquo;</button></li>}
               </ul>
