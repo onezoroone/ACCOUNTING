@@ -7,7 +7,7 @@ import axiosClient from "../libs/axios-client";
 import PropTypes from "prop-types";
 
 
-const ReportPage = (initialData) => {
+const ReportPage = ({initialData}) => {
   const [formData, setFormData] = useState(
     initialData || { accountCode: "", accountName: "",
                      debitOpening: "", creditOpening: "",
@@ -15,15 +15,15 @@ const ReportPage = (initialData) => {
                      debitClosing: "", creditClosing: "",
                      }
   );  const [error, setError] = useState("");
-  const [startDate, setStartDate] = useState<Date | null>(null);
-  const [endDate, setEndDate] = useState<Date | null>(null);
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
   const [filterText, setFilterText] = useState("Hiển thị tất cả dữ liệu");
 
   useEffect(() => {
     fetchData();
   }, []);
 
-  const fetchData = async (start: any = null, end: any = null) => {
+  const fetchData = async (start = null, end = null) => {
     try {
       let url = "/reports/trial-balance";
       if (start && end) {
