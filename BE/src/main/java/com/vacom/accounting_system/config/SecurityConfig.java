@@ -36,7 +36,7 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http
+        HttpSecurity httpSecurity = http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource())) // ✅ Kích hoạt CORS
                 .securityContext(securityContext -> securityContext.requireExplicitSave(false))
                 .sessionManagement(session ->
@@ -60,6 +60,14 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/master-data/currencies").hasAnyAuthority("CREATE_CURRENCY")
                         .requestMatchers(HttpMethod.PUT, "/api/master-data/currencies/**").hasAnyAuthority("EDIT_CURRENCY")
                         .requestMatchers(HttpMethod.DELETE, "/api/master-data/currencies/**").hasAnyAuthority("EDIT_CURRENCY")
+                        .requestMatchers(HttpMethod.GET, "/api/roles").hasAnyAuthority("VIEW_ROLE")
+                        .requestMatchers(HttpMethod.POST, "/api/roles").hasAnyAuthority("CREATE_ROLE")
+                        .requestMatchers(HttpMethod.PUT, "/api/roles/**").hasAnyAuthority("EDIT_ROLE")
+                        .requestMatchers(HttpMethod.DELETE, "/api/roles/**").hasAnyAuthority("EDIT_ROLE")
+                        .requestMatchers(HttpMethod.GET, "/api/permissions").hasAnyAuthority("VIEW_PERMISSION")
+                        .requestMatchers(HttpMethod.POST, "/api/permissions").hasAnyAuthority("CREATE_PERMISSION")
+                        .requestMatchers(HttpMethod.PUT, "/api/permissions/**").hasAnyAuthority("EDIT_PERMISSION")
+                        .requestMatchers(HttpMethod.DELETE, "/api/permissions/**").hasAnyAuthority("EDIT_PERMISSION")
                         .requestMatchers(HttpMethod.GET, "/api/reports/account-ledger/report").hasAnyAuthority("VIEW_ACCOUNT_LEDGER")
                         .requestMatchers(HttpMethod.GET, "/api/reports/account-ledger").hasAnyAuthority("VIEW_ACCOUNT_LEDGER")
                         .requestMatchers(HttpMethod.POST, "/api/reports/account-ledger").hasAnyAuthority("CREATE_VOUCHER")
@@ -82,8 +90,6 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/users").hasAnyAuthority("CREATE_USER")
                         .requestMatchers(HttpMethod.PUT, "/api/users/**").hasAnyAuthority("EDIT_USER")
                         .requestMatchers(HttpMethod.DELETE, "/api/users/**").hasAnyAuthority("EDIT_USER")
-                        .requestMatchers("/api/roles/**").hasAnyAuthority("MANAGE_ROLES")
-                        .requestMatchers("/api/permissions/**").hasAnyAuthority("MANAGE_PERMISSIONS")
                         .anyRequest().authenticated()
                 )
                 .csrf(AbstractHttpConfigurer::disable)

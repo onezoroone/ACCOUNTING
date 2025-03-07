@@ -1,9 +1,13 @@
 package com.vacom.accounting_system.controller;
 
 import com.vacom.accounting_system.dto.TrialBalanceDTO;
+import com.vacom.accounting_system.dto.response.TrialBalanceResponseDTO;
 import com.vacom.accounting_system.service.TrialBalanceService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -22,10 +26,14 @@ public class TrialBalanceController {
 
     @GetMapping
     @PreAuthorize("hasAnyAuthority('VIEW_TRIAL_BALANCE')")
-    public ResponseEntity<List<TrialBalanceDTO>> getTrialBalance(
-            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
-            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate) {
-        List<TrialBalanceDTO> trialBalance = trialBalanceService.getTrialBalance(startDate, endDate);
+    public ResponseEntity<Page<TrialBalanceResponseDTO>> getTrialBalance(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate){
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<TrialBalanceResponseDTO> trialBalance = trialBalanceService.getTrialBalance(pageable, startDate, endDate);
         return ResponseEntity.ok(trialBalance);
     }
 
