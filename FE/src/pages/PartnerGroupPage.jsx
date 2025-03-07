@@ -114,28 +114,16 @@ const PartnerGroupPage = () => {
           </Col>
         </Row>
 
-<<<<<<< HEAD
-        {isFormOpen && (
-          <PartnerGroupForm 
-            isOpen={isFormOpen} 
-            onClose={() => setIsFormOpen(false)} 
-            onSave={selectedEntity ? handleUpdate : handleSave} 
-            initialData={selectedEntity} 
-          />
-        )}
-      </Container>
-    </div>
-=======
       {isFormOpen && (
         <PartnerGroupForm 
-  isOpen={isFormOpen} 
-  onClose={() => setIsFormOpen(false)} 
-  onSave={handleSubmit} 
-  initialData={selectedEntity} // Truyền dữ liệu đúng
-/>
+          isOpen={isFormOpen} 
+          onClose={() => setIsFormOpen(false)} 
+          onSave={handleSubmit} 
+          initialData={selectedEntity} // Truyền dữ liệu đúng
+        />
       )}
     </Container>
->>>>>>> 934416b (new update)
+  </div>
   );
 };
 
