@@ -113,17 +113,17 @@ const PartnerGroupPage = () => {
             />
           </Col>
         </Row>
+        {isFormOpen && (
+          <PartnerGroupForm 
+  isOpen={isFormOpen} 
+  onClose={() => setIsFormOpen(false)} 
+  onSave={handleSubmit} 
+  initialData={selectedEntity} // Truyền dữ liệu đúng
+/>
 
-      {isFormOpen && (
-        <PartnerGroupForm 
-          isOpen={isFormOpen} 
-          onClose={() => setIsFormOpen(false)} 
-          onSave={handleSubmit} 
-          initialData={selectedEntity} // Truyền dữ liệu đúng
-        />
-      )}
-    </Container>
-  </div>
+        )}
+      </Container>
+    </div>
   );
 };
 
