@@ -41,6 +41,6 @@ public class CurrencyController     {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyAuthority('EDIT_CURRENCY')") // Giả sử DELETE cũng cần EDIT_ACCOUNT
+    @PreAuthorize("hasAnyAuthority('EDIT_CURRENCY')")
     public void deleteCurrency(@PathVariable Integer id) {currencyService.deleteCurrency(id);}
 }
