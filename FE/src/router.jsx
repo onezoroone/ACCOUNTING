@@ -7,12 +7,12 @@ import PartnerPage from "./pages/PartnerPage";
 import ReceiptVoucher from "./components/ReceiptVoucher";
 import PaymentVoucher from "./components/PaymentVoucher";
 import OtherVoucher from "./components/OtherVoucher";
-import CurrenciesForm from "./components/CurrenciesForm";
 import PartnerGroupPage from "./pages/PartnerGroupPage";
 import VouchersPage from "./pages/VouchersPage";
 import AccountDetailReport from "./components/AccountDetailReport";
 import TrialBalanceReport from "./components/TrialBalanceReport";
 import UserPage from "./pages/UserPage";
+import CurrencyPage from "./pages/CurrencyPage";
 
 const router = createBrowserRouter([
     {
@@ -45,7 +45,7 @@ const router = createBrowserRouter([
             },
             {
                 path: "/currencies",
-                element: <CurrenciesForm />
+                element: <CurrencyPage/>
             },
             {
                 path: '/vouchers',

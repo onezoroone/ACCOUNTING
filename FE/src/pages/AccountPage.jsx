@@ -133,8 +133,8 @@ const AccountPage = () => {
   };
 
   return (
-    <div className="card col-12">
-      <Container fluid className="vh-100 d-flex flex-column">
+    <div className="card col-12 p-3">
+      <Container fluid className="d-flex flex-column">
         <Row className="w-100 p-2">
           
         </Row>
