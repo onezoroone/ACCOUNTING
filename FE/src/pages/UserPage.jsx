@@ -1,15 +1,29 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Modal, Button, Form, Table } from "react-bootstrap";
 import { PencilFill, TrashFill } from "react-bootstrap-icons";
+import axiosClient from "../libs/axios-client";
 
 function UserPage() {
-  const [users, setUsers] = useState([
-    { id: 1, name: "Nguyễn Văn A", email: "a@example.com" },
-    { id: 2, name: "Trần Thị B", email: "b@example.com" },
-  ]);
+  const [users, setUsers] = useState([]);
   const [show, setShow] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [currentUser, setCurrentUser] = useState({ id: null, name: "", email: "" });
+  const [currentPage, setCurrentPage] = useState(0);
+  const [totalPage, setTotalPage] = useState(1);
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      await axiosClient.get('/users', {
+        params:{
+          page: currentPage
+        }
+      }).then((res) => {
+        setUsers(res.data.data.content);
+        setTotalPage(res.data.data.totalPages);
+      });
+    }
+    fetchUsers();
+  }, [currentPage]);
 
   const handleShow = () => {
     setEditMode(false);
@@ -45,17 +59,21 @@ function UserPage() {
   };
 
   return (
-    <div className="container mt-4">
+    <div className="card col-12 p-3">
       <h2 className="text-center">Quản lý người dùng</h2>
-      <Button variant="primary" onClick={handleShow} className="mb-3">
-        Thêm mới
-      </Button>
-      <Table striped bordered hover className="text-center">
+      <div>
+        <Button variant="primary" onClick={handleShow} className="mb-3">
+          Thêm mới
+        </Button>
+      </div>
+      <Table striped bordered className="text-center">
         <thead>
           <tr className="table-primary">
             <th>#</th>
             <th>Tên</th>
             <th>Email</th>
+            <th>Username</th>
+            <th>Vai trò</th>
             <th>Sửa</th>
             <th>Xóa</th>
           </tr>
@@ -64,8 +82,10 @@ function UserPage() {
           {users.map((user, index) => (
             <tr key={user.id}>
               <td>{index + 1}</td>
-              <td>{user.name}</td>
+              <td>{user.fullName}</td>
               <td>{user.email}</td>
+              <td>{user.username}</td>
+              <td>{user.roles.map(role => role.roleName).join(", ")}</td>
               <td>
                 <Button variant="warning" size="sm" onClick={() => handleEdit(user)}>
                   <PencilFill />
@@ -79,6 +99,17 @@ function UserPage() {
             </tr>
           ))}
         </tbody>
+        {totalPage != 1 && <div className="d-flex justify-content-end mt-3 mb-5">
+          <nav aria-label="Page navigation example">
+            <ul className="pagination">
+              {currentPage > 0 && <li className="page-item"><button onClick={() => setCurrentPage(currentPage + 1)} className="page-link">&laquo;</button></li>}
+              {Array.from({length: totalPage}, (_, index) => (
+                <li key={index} className={`page-item ${index == currentPage ? 'active' : ''}`}><button className="page-link">{index + 1}</button></li>
+              ))}
+              {currentPage < totalPage - 1 && <li className="page-item"><button onClick={() => setCurrentPage(currentPage + 1)} className="page-link">&raquo;</button></li>}
+            </ul>
+          </nav>
+        </div>}
       </Table>
       {/* Modal thêm/sửa người dùng */}
       <Modal show={show} onHide={handleClose}>
