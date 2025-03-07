@@ -13,6 +13,7 @@ const PartnerGroupPage = () => {
   const [editIndex, setEditIndex] = useState(null);
   const [reload, setReload] = useState(false);
   const MySwal = withReactContent(Swal);
+  const [selectedEntity, setSelectedEntity] = useState(null);
 
 
   // Gọi API lấy danh sách nhóm đối tượng
@@ -44,10 +45,10 @@ const PartnerGroupPage = () => {
     setIsFormOpen(true);
   };
 
-  const handleEdit = (index) => {
-    setEditIndex(index);
+  const handleEdit = (item) => {
+    setSelectedEntity(item); // Lưu dữ liệu nhóm cần sửa
     setIsFormOpen(true);
-  };
+  };  
 
   const handleDelete = async (item) => {
     MySwal.fire({
@@ -64,35 +65,40 @@ const PartnerGroupPage = () => {
         try {
           await axiosClient.delete(`/master-data/entity-groups/${item.id}`);
           MySwal.fire('Thành công!', 'Xóa nhóm đối tác thành công!', 'success');
-          setReload(!reload);
-        } catch {
+          fetchData(); // Gọi lại API để cập nhật danh sách
+        } catch (error) {
+          console.error("Lỗi khi xóa:", error);
           MySwal.fire('Oops...', 'Có lỗi xảy ra khi xóa nhóm đối tác!', 'error');
         }
       }
     });
-  };
+  };  
 
   const handleSubmit = async (newData) => {
-    if (editIndex !== null) {
-      // Cập nhật dữ liệu
+    console.log("Dữ liệu gửi lên:", newData); // Debug dữ liệu gửi lên
+  
+    if (newData.id) {  // Kiểm tra nếu có ID => Cập nhật
       try {
         await axiosClient.put(`/master-data/entity-groups/${newData.id}`, newData);
         MySwal.fire('Thành công!', 'Cập nhật nhóm đối tác thành công!', 'success');
-      } catch {
+      } catch (error) {
+        console.error("Lỗi cập nhật:", error.response?.data || error);
         MySwal.fire('Oops...', 'Có lỗi xảy ra khi cập nhật nhóm đối tác!', 'error');
       }
-    } else {
-      // Thêm mới dữ liệu
+    } else {  // Nếu không có ID => Thêm mới
       try {
         await axiosClient.post('/master-data/entity-groups', newData);
         MySwal.fire('Thành công!', 'Thêm mới nhóm đối tác thành công!', 'success');
-      } catch {
+      } catch (error) {
+        console.error("Lỗi thêm mới:", error.response?.data || error);
         MySwal.fire('Oops...', 'Có lỗi xảy ra khi thêm mới nhóm đối tác!', 'error');
       }
     }
+  
     setIsFormOpen(false);
     setReload(!reload);
   };
+  
 
   return (
     <div className="card col-12 p-3">
@@ -108,6 +114,7 @@ const PartnerGroupPage = () => {
           </Col>
         </Row>
 
+<<<<<<< HEAD
         {isFormOpen && (
           <PartnerGroupForm 
             isOpen={isFormOpen} 
@@ -118,6 +125,17 @@ const PartnerGroupPage = () => {
         )}
       </Container>
     </div>
+=======
+      {isFormOpen && (
+        <PartnerGroupForm 
+  isOpen={isFormOpen} 
+  onClose={() => setIsFormOpen(false)} 
+  onSave={handleSubmit} 
+  initialData={selectedEntity} // Truyền dữ liệu đúng
+/>
+      )}
+    </Container>
+>>>>>>> 934416b (new update)
   );
 };
 
