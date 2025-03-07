@@ -142,6 +142,9 @@ public class VoucherService {
         response.setEntityCode(voucher.getEntityCode());
         response.setEntityName(entity.getEntityName());
         response.setVoucherDate(voucher.getVoucherDate());
+        response.setCurrentCode(currency.getCurrencyCode());
+        response.setTotalAmount(voucher.getTotalAmount());
+        response.setTotalAmountOrigin(voucher.getTotalAmountOrigin());
         return response;
     }
 
@@ -164,10 +167,6 @@ public class VoucherService {
                 detailDTO.setAccountDebitCode(detail.getAccountDebit().getAccountCode());
                 detailDTO.setAccountCreditCode(detail.getAccountCredit().getAccountCode());
                 detailDTO.setAmount(detail.getAmount());
-                detailDTO.setCurrentCode(currency.getCurrencyCode());
-                detailDTO.setExchangeRate(currency.getExchangeRate());
-                detailDTO.setTotalAmount(detail.getAmount());
-                detailDTO.setTotalAmountOrigin(voucher.getTotalAmountOrigin());
                 return detailDTO;
             }).collect(Collectors.toList());
 
