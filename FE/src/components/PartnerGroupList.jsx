@@ -1,7 +1,6 @@
-import React from "react";
-import { Table, Button } from "react-bootstrap";
+import { Table, Button, OverlayTrigger, Tooltip } from "react-bootstrap";
 
-const PartnerGroupList = ({ data, onEdit, onDelete, onAdd }) => {
+const PartnerGroupList = ({ data, onAdd, onEdit, onDelete }) => {
   return (
     <div className="table-responsive">
       <h2 className="text-center mb-3">Danh sách nhóm đối tượng</h2>
@@ -9,33 +8,48 @@ const PartnerGroupList = ({ data, onEdit, onDelete, onAdd }) => {
         <thead className="table-primary">
           <tr>
             <th>#</th>
-            <th>Mã nhóm đối tượng</th>
             <th>Tên nhóm đối tượng</th>
+            <th>Mã nhóm đối tượng</th>
             <th>Mã mẹ</th>
-            <th></th>
-            <th></th>
+            <th>Sửa</th>
+            <th>Xóa</th>
           </tr>
         </thead>
         <tbody>
-          {data.map((item, index) => (
-            <tr key={index}>
-              <td>{index + 1}</td>
-              <td>{item.entity_code}</td>
-              <td>{item.entity_group_name}</td>
-              <td>{item.parent_code}</td>
-              <td>
-                <Button variant="" size="sm" onClick={() => onEdit(index)}>✏️</Button>
-              </td>
-              <td>
-                <Button variant="" size="sm" onClick={() => onDelete(index)}>🗑️</Button>
-              </td>
-            </tr>
-          ))}
+          {data.length > 0 ? (
+            data.map((item, index) => (
+              <tr key={item.id}>
+                <td>{index + 1}</td>
+                <td>{item.entityGroupName}</td>
+                <td>{item.entityCode}</td>
+                <td>{item.parentCode}</td>
+                <td>
+                    <Button 
+                      variant="warning" 
+                      size="sm" 
+                      onClick={() => onEdit(item)}
+                    >
+                      ✏️
+                    </Button>
+                </td>
+                <td>
+                  <Button 
+                      variant="danger" 
+                      size="sm" 
+                      onClick={() => onDelete(item)}
+                    >
+                      🗑️
+                  </Button>
+                </td>
+              </tr>
+            ))
+          ) : (
+            <tr><td colSpan="6" className="text-center">Không có dữ liệu</td></tr>
+          )}
         </tbody>
       </Table>
-      <div className="d-flex justify-content-start ">
-        <Button variant="primary" onClick={onAdd}>Thêm mới</Button>
-      </div>
+      {/* Nút Thêm mới */}
+      <Button variant="primary" onClick={onAdd}>Thêm mới</Button>
     </div>
   );
 };

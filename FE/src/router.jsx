@@ -7,12 +7,12 @@ import PartnerPage from "./pages/PartnerPage";
 import ReceiptVoucher from "./components/ReceiptVoucher";
 import PaymentVoucher from "./components/PaymentVoucher";
 import OtherVoucher from "./components/OtherVoucher";
-import CurrenciesForm from "./components/CurrenciesForm";
 import PartnerGroupPage from "./pages/PartnerGroupPage";
-import VoucherManagementForm from "./components/VoucherManagementForm";
+import VouchersPage from "./pages/VouchersPage";
 import AccountDetailReport from "./components/AccountDetailReport";
-import BalanceReport from "./components/BalanceReport";
+import TrialBalanceReport from "./components/TrialBalanceReport";
 import UserPage from "./pages/UserPage";
+import CurrencyPage from "./pages/CurrencyPage";
 
 const router = createBrowserRouter([
     {
@@ -45,11 +45,11 @@ const router = createBrowserRouter([
             },
             {
                 path: "/currencies",
-                element: <CurrenciesForm />
+                element: <CurrencyPage/>
             },
             {
                 path: '/vouchers',
-                element: <VoucherManagementForm />
+                element: <VouchersPage />
             },
             {
                 path: '/accountdetailreports',
@@ -57,7 +57,7 @@ const router = createBrowserRouter([
             },
             {
                 path: '/balancereports',
-                element: <BalanceReport />
+                element: <TrialBalanceReport />
             },
             {
                 path: '/partnergroups',

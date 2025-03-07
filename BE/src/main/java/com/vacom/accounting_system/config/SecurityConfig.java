@@ -1,8 +1,7 @@
 package com.vacom.accounting_system.config;
 
-import com.vacom.accounting_system.service.UserDetailsServiceImpl;
-import com.vacom.accounting_system.filter.JwtAuthFilter;
-import lombok.RequiredArgsConstructor;
+import java.util.List;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -21,7 +20,10 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import java.util.List;
+import com.vacom.accounting_system.filter.JwtAuthFilter;
+import com.vacom.accounting_system.service.UserDetailsServiceImpl;
+
+import lombok.RequiredArgsConstructor;
 
 @Configuration
 @EnableWebSecurity
@@ -54,6 +56,10 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/master-data/accounts").hasAnyAuthority("CREATE_ACCOUNT")
                         .requestMatchers(HttpMethod.PUT, "/api/master-data/accounts/**").hasAnyAuthority("EDIT_ACCOUNT")
                         .requestMatchers(HttpMethod.DELETE, "/api/master-data/accounts/**").hasAnyAuthority("EDIT_ACCOUNT")
+                        .requestMatchers(HttpMethod.GET, "/api/master-data/currencies").hasAnyAuthority("VIEW_CURRENCY")
+                        .requestMatchers(HttpMethod.POST, "/api/master-data/currencies").hasAnyAuthority("CREATE_CURRENCY")
+                        .requestMatchers(HttpMethod.PUT, "/api/master-data/currencies/**").hasAnyAuthority("EDIT_CURRENCY")
+                        .requestMatchers(HttpMethod.DELETE, "/api/master-data/currencies/**").hasAnyAuthority("EDIT_CURRENCY")
                         .requestMatchers(HttpMethod.GET, "/api/reports/account-ledger/report").hasAnyAuthority("VIEW_ACCOUNT_LEDGER")
                         .requestMatchers(HttpMethod.POST, "/api/reports/account-ledger").hasAnyAuthority("CREATE_VOUCHER")
                         .requestMatchers(HttpMethod.PUT, "/api/reports/account-ledger/**").hasAnyAuthority("EDIT_VOUCHER")
@@ -99,7 +105,11 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:5173")); // ✅ Cho phép frontend gọi API
+        configuration.setAllowedOrigins(List.of("http://localhost:5173",
+        "http://localhost:5174",
+        "http://localhost:5175",
+        "http://localhost:5176",
+        "http://localhost:5177","http://localhost:5178","http://localhost:5179","http://localhost:5180")); // ✅ Cho phép frontend gọi API
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true); // ✅ Quan trọng nếu bạn dùng cookies/auth
