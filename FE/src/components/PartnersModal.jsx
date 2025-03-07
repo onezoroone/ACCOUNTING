@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState } from "react";
 import { Modal, Button, Form, Row, Col } from "react-bootstrap";
 import PropTypes from "prop-types";
 
@@ -13,25 +13,16 @@ const PartnersModal = ({ isOpen, onClose, onSave, initialData }) => {
     email: ""
   };
 
-  const [formData, setFormData] = useState(initialFormData);
+  const [formData, setFormData] = useState(initialData ?? initialFormData);
   const [errors, setErrors] = useState({});
-
-  // Cập nhật form khi mở modal chỉnh sửa
-  useEffect(() => {
-    if (initialData) {
-      setFormData(initialData);
-    } else {
-      setFormData(initialFormData);
-    }
-    setErrors({}); // Reset lỗi khi mở modal
-  }, [initialData, isOpen]);
 
   const validate = () => {
     let newErrors = {};
+    setErrors({});
 
     // Kiểm tra các trường bắt buộc
     Object.keys(formData).forEach((key) => {
-      if (!formData[key] && key !== "entityGroupCode" && key !== "phoneNumber" && key !== "email") {
+      if (!formData[key] && key !== "entityGroupCode" && key !== "phoneNumber" && key !== "email" && key !== "website") {
         newErrors[key] = "Trường này không được để trống";
       }
     });
@@ -45,6 +36,7 @@ const PartnersModal = ({ isOpen, onClose, onSave, initialData }) => {
     }
 
     setErrors(newErrors);
+    console.log(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
@@ -189,7 +181,7 @@ const PartnersModal = ({ isOpen, onClose, onSave, initialData }) => {
 PartnersModal.propTypes = {
   isOpen: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
-  onSubmit: PropTypes.func.isRequired,
+  onSave: PropTypes.func.isRequired,
   initialData: PropTypes.shape({
     taxCode: PropTypes.string,
     entityCode: PropTypes.string,
