@@ -148,8 +148,26 @@ function UserPage() {
     setShow(true);
   };
 
-  const handleDelete = (id) => {
-    setUsers(users.filter(user => user.id !== id));
+  const handleDelete = async (user) => {
+    Myswal.fire({
+      title: 'Bạn có chắc chắn muốn xóa người dùng này?',
+      showCancelButton: true,
+      confirmButtonText: `Xóa`,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        axiosClient.delete('/users/' + user.id)
+          .then(() => {
+            Myswal.fire('Đã xóa!', '', 'success');
+            setReload(!reload);
+          }).catch((err) => {
+            Myswal.fire({
+              icon: 'error',
+              title: 'Lỗi',
+              text: err.response.data.message ?? 'Có lỗi xảy ra khi xóa người dùng'
+            });
+          });
+      }
+    });
   };
 
   return (
@@ -187,7 +205,7 @@ function UserPage() {
                 </Button>
               </td>
               <td>
-                <Button variant="danger" size="sm" onClick={() => handleDelete(user.id)}>
+                <Button variant="danger" size="sm" onClick={() => handleDelete(user)}>
                   <TrashFill />
                 </Button>
               </td>
