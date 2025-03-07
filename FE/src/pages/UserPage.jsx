@@ -1,15 +1,22 @@
 import { useEffect, useState } from "react";
-import { Modal, Button, Form, Table } from "react-bootstrap";
+import { Modal, Button, Form, Table, Col } from "react-bootstrap";
 import { PencilFill, TrashFill } from "react-bootstrap-icons";
 import axiosClient from "../libs/axios-client";
+import { Link } from "react-router-dom";
+import Select from 'react-select'
+import withReactContent from "sweetalert2-react-content";
+import Swal from "sweetalert2";
 
 function UserPage() {
   const [users, setUsers] = useState([]);
   const [show, setShow] = useState(false);
   const [editMode, setEditMode] = useState(false);
-  const [currentUser, setCurrentUser] = useState({ id: null, name: "", email: "" });
+  const [currentUser, setCurrentUser] = useState({ id: null, username: "", email: "", fullName: "", password: "", roleIds: [] });
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPage, setTotalPage] = useState(1);
+  const [roles, setRoles] = useState([]);
+  const Myswal = withReactContent(Swal);
+  const [reload, setReload] = useState(false);
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -23,34 +30,121 @@ function UserPage() {
       });
     }
     fetchUsers();
-  }, [currentPage]);
+  }, [currentPage, reload]);
 
-  const handleShow = () => {
+  const handleFetchRoles = async () => {
+    await axiosClient.get('/roles').then((res) => {
+      setRoles(res.data.roles);
+    });
+  }
+
+  const handleShow = async () => {
+    if(roles.length == 0){
+      await handleFetchRoles();
+    }
     setEditMode(false);
-    setCurrentUser({ id: null, name: "", email: "" });
+    setCurrentUser({ id: null, username: "", email: "", fullName: "", password: "", roleIds: [] });
     setShow(true);
   };
   
   const handleClose = () => setShow(false);
 
   const handleChange = (e) => {
-    setCurrentUser({ ...currentUser, [e.target.name]: e.target.value });
-  };
+    setCurrentUser(prevState => ({
+      ...prevState,
+      [e.target.name]: e.target.value
+    }));
+  }
 
-  const handleSubmit = () => {
-    if (currentUser.name && currentUser.email) {
-      if (editMode) {
-        setUsers(users.map(user => (user.id === currentUser.id ? currentUser : user)));
-      } else {
-        setUsers([...users, { id: users.length + 1, ...currentUser }]);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (currentUser.fullName === "" || currentUser.email === "" || currentUser.username === "" || currentUser.roleIds.length === 0) {
+      Myswal.fire({
+        icon: 'error',
+        title: 'Lỗi',
+        text: 'Vui lòng nhập đầy đủ thông tin'
+      });
+    }else{
+      if(currentUser.email && !currentUser.email.match(/^[\w.-]+@([\w-]+\.)+[\w-]{2,4}$/g)){
+        Myswal.fire({
+          icon: 'error',
+          title: 'Lỗi',
+          text: 'Email không hợp lệ'
+        });
+        return;
       }
-      handleClose();
+
+      if(currentUser.username.length < 3){
+        Myswal.fire({
+          icon: 'error',
+          title: 'Lỗi',
+          text: 'Username phải có ít nhất 3 ký tự'
+        });
+        return;
+      }
+
+      if (editMode) {
+        await axiosClient.put('/users/' + currentUser.id, currentUser)
+          .then(() => {
+            Myswal.fire({
+              icon: 'success',
+              title: 'Thành công',
+              text: 'Chỉnh sửa người dùng thành công'
+            });
+            setReload(!reload);
+            handleClose();
+          }
+          ).catch((err) => {
+            Myswal.fire({
+              icon: 'error',
+              title: 'Lỗi',
+              text: err.response.data.message ?? 'Có lỗi xảy ra khi chỉnh sửa người dùng'
+            });
+          });
+      } else {
+        if(currentUser.password.length < 6){
+          Myswal.fire({
+            icon: 'error',
+            title: 'Lỗi',
+            text: 'Mật khẩu phải có ít nhất 6 ký tự'
+          });
+          return;
+        }
+        await axiosClient.post('/users', currentUser)
+          .then(() => {
+            Myswal.fire({
+              icon: 'success',
+              title: 'Thành công',
+              text: 'Thêm người dùng thành công'
+            });
+            setReload(!reload);
+            handleClose();
+          }).catch((err) => {
+            Myswal.fire({
+              icon: 'error',
+              title: 'Lỗi',
+              text: err.response.data.message ?? 'Có lỗi xảy ra khi thêm mới người dùng'
+            });
+          });
+      }
     }
   };
 
-  const handleEdit = (user) => {
+  const handleEdit = async (user) => {
+    if(roles.length == 0){
+      await handleFetchRoles();
+    }
     setEditMode(true);
-    setCurrentUser(user);
+    setCurrentUser(
+      {
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        fullName: user.fullName,
+        password: user.password ?? "",
+        roleIds: user.roles.map(role => role.id)
+      }
+    );
     setShow(true);
   };
 
@@ -61,10 +155,11 @@ function UserPage() {
   return (
     <div className="card col-12 p-3">
       <h2 className="text-center">Quản lý người dùng</h2>
-      <div>
-        <Button variant="primary" onClick={handleShow} className="mb-3">
+      <div className="mb-3">
+        <Button variant="primary" onClick={handleShow}>
           Thêm mới
         </Button>
+        <Link to="/roles" className="btn btn-success ms-3">Quản lý vai trò</Link>
       </div>
       <Table striped bordered className="text-center">
         <thead>
@@ -104,7 +199,7 @@ function UserPage() {
             <ul className="pagination">
               {currentPage > 0 && <li className="page-item"><button onClick={() => setCurrentPage(currentPage + 1)} className="page-link">&laquo;</button></li>}
               {Array.from({length: totalPage}, (_, index) => (
-                <li key={index} className={`page-item ${index == currentPage ? 'active' : ''}`}><button className="page-link">{index + 1}</button></li>
+                <li key={index} className={`page-item ${index == currentPage ? 'active' : ''}`}><button onClick={() => setCurrentPage(index)} className="page-link">{index + 1}</button></li>
               ))}
               {currentPage < totalPage - 1 && <li className="page-item"><button onClick={() => setCurrentPage(currentPage + 1)} className="page-link">&raquo;</button></li>}
             </ul>
@@ -122,10 +217,11 @@ function UserPage() {
               <Form.Label>Tên</Form.Label>
               <Form.Control
                 type="text"
-                name="name"
-                value={currentUser.name}
+                name="fullName"
+                value={currentUser.fullName}
                 onChange={handleChange}
                 placeholder="Nhập tên"
+                required
               />
             </Form.Group>
             <Form.Group className="mb-3">
@@ -136,15 +232,59 @@ function UserPage() {
                 value={currentUser.email}
                 onChange={handleChange}
                 placeholder="Nhập email"
+                required
               />
             </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>Username</Form.Label>
+              <Form.Control
+                type="text"
+                name="username"
+                value={currentUser.username}
+                onChange={handleChange}
+                placeholder="Nhập username"
+                required
+              />
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>Mật khẩu(để trống nếu giữ nguyên)</Form.Label>
+              <Form.Control
+                type="text"
+                name="password"
+                value={currentUser.password}
+                onChange={handleChange}
+                placeholder="Nhập mật khẩu"
+                required
+              />
+            </Form.Group>
+            <Col md={12}>
+                <Form.Group controlId="roles">
+                    <Form.Label>Vai trò</Form.Label>
+                    <Select
+                        isMulti
+                        closeMenuOnSelect={true}
+                        options={roles.map(role => ({ 
+                            value: role.id, 
+                            label: role.roleName 
+                        }))}
+                        value={currentUser.roleIds?.map(roleId => {
+                            const role = roles.find(r => r.id === roleId);
+                            return role ? { value: role.id, label: role.roleName } : null;
+                        }).filter(Boolean) || []}
+                        onChange={(value) => setCurrentUser({ 
+                            ...currentUser, 
+                            roleIds: value.map(item => item.value) 
+                        })}
+                    />
+                </Form.Group>
+            </Col>
           </Form>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleClose}>
             Hủy
           </Button>
-          <Button variant="primary" onClick={handleSubmit}>
+          <Button variant="primary" type="submit" onClick={handleSubmit}>
             Lưu
           </Button>
         </Modal.Footer>

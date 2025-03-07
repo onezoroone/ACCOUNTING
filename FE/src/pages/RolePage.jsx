@@ -4,6 +4,7 @@ import axiosClient from "../libs/axios-client";
 import withReactContent from "sweetalert2-react-content";
 import Swal from "sweetalert2";
 import Select from 'react-select'
+import { Link } from "react-router-dom";
 
 function RolePage() {
     const [data, setData] = useState([]);
@@ -133,6 +134,7 @@ function RolePage() {
                             <h2 className="text-center mb-3">Danh sách Vai Trò</h2>
                             <div className="mb-3">
                                 <Button variant="primary" onClick={handleAdd}>Thêm mới</Button>
+                                <Link to="/permissions" className="btn btn-success ms-3">Quản lý quyền</Link>
                             </div>
                             <Table striped bordered hover responsive className="w-100">
                                 <thead className="table-primary">
