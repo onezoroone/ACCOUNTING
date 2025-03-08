@@ -1,10 +1,5 @@
-<<<<<<< HEAD
-import React, { useEffect, useState } from "react";
-import { Button, Container, Row, Col, Table, Alert, Pagination } from "react-bootstrap";
-=======
 import { useEffect, useState } from "react";
 import { Button, Container, Row, Col, Table, Alert } from "react-bootstrap";
->>>>>>> 37684c18477273c58e6c2f92038d87330bdfb3f9
 import { FaSyncAlt } from "react-icons/fa";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -13,11 +8,6 @@ import PropTypes from "prop-types";
 import TemplateTrialBalanceReport from "./TemplateTrialBalanceReport";
 import ExportButton from "./ExcelTrialBalanceReport";
 
-<<<<<<< HEAD
-const ReportPage = ({ initialData }) => {
-  const [formData, setFormData] = useState([]);
-  const [error, setError] = useState("");
-=======
 const sortAccountCodes = (data) => {
   const sortedData = [...data];
   
@@ -45,15 +35,10 @@ const ReportPage = ({initialData}) => {
                      debitClosing: "", creditClosing: "",
                      }
   );  const [error, setError] = useState("");
->>>>>>> 37684c18477273c58e6c2f92038d87330bdfb3f9
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [filterText, setFilterText] = useState("Hiển thị tất cả dữ liệu");
   const [show, setShow] = useState(false);
-
-  // Phân trang
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10; // Số dòng trên mỗi trang
 
   useEffect(() => {
     fetchData();
@@ -86,7 +71,6 @@ const ReportPage = ({initialData}) => {
       } else {
         setFormData([]);
       }
-      setCurrentPage(1); // Reset về trang đầu tiên sau khi lọc
     } catch (error) {
       console.error("Lỗi khi lấy dữ liệu:", error);
       setError("Không thể lấy dữ liệu. Vui lòng thử lại!");
@@ -94,7 +78,7 @@ const ReportPage = ({initialData}) => {
   };
 
   const handleFilter = () => {
-    setError("");
+    setError(""); // Reset lỗi trước khi lọc
 
     if (!startDate || !endDate) {
       setError("Vui lòng chọn đầy đủ ngày bắt đầu và ngày kết thúc.");
@@ -109,18 +93,6 @@ const ReportPage = ({initialData}) => {
     setFilterText(`Lọc từ ${startDate.toLocaleDateString()} đến ${endDate.toLocaleDateString()}`);
     fetchData(startDate, endDate);
   };
-
-  // Tính toán dữ liệu cho trang hiện tại
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = formData.slice(indexOfFirstItem, indexOfLastItem);
-
-  // Tạo danh sách số trang
-  const totalPages = Math.ceil(formData.length / itemsPerPage);
-  const pageNumbers = [];
-  for (let i = 1; i <= totalPages; i++) {
-    pageNumbers.push(i);
-  }
 
   return (
     <Container fluid className="card p-3">
@@ -183,7 +155,6 @@ const ReportPage = ({initialData}) => {
         </Col>
       </Row>
 
-      {/* Bảng dữ liệu */}
       <Table bordered hover className="table text-center">
         <thead className="table-primary bg-primary text-white">
           <tr>
@@ -199,10 +170,10 @@ const ReportPage = ({initialData}) => {
           </tr>
         </thead>
         <tbody>
-          {currentItems.length > 0 ? (
-            currentItems.map((item, index) => (
+          {formData.length > 0 ? (
+            formData.map((item, index) => (
               <tr key={index}>
-                <td>{indexOfFirstItem + index + 1}</td>
+                <td>{index + 1}</td>
                 <td>{item.accountCode}</td>
                 <td>{item.accountName}</td>
                 <td>{item.debitOpening.toLocaleString()}</td>
@@ -220,29 +191,22 @@ const ReportPage = ({initialData}) => {
           )}
         </tbody>
       </Table>
-
-      {/* Phân trang */}
-      <Pagination className="justify-content-center">
-        <Pagination.Prev
-          onClick={() => setCurrentPage(currentPage - 1)}
-          disabled={currentPage === 1}
-        />
-        {pageNumbers.map((number) => (
-          <Pagination.Item
-            key={number}
-            active={number === currentPage}
-            onClick={() => setCurrentPage(number)}
-          >
-            {number}
-          </Pagination.Item>
-        ))}
-        <Pagination.Next
-          onClick={() => setCurrentPage(currentPage + 1)}
-          disabled={currentPage === totalPages}
-        />
-      </Pagination>
     </Container>
   );
 };
 
+ReportPage.propTypes = {
+  onSubmit: PropTypes.func.isRequired,
+  onClose: PropTypes.func.isRequired,
+  initialData: PropTypes.shape({
+    accountCode: PropTypes.string,
+    accountName: PropTypes.string,
+    debitOpening: PropTypes.string,
+    creditOpening: PropTypes.string,
+    debitTransaction: PropTypes.string,
+    creditTransaction: PropTypes.string,    
+    debitClosing: PropTypes.string,
+    creditClosing: PropTypes.string,
+  }),
+};
 export default ReportPage;

@@ -1,22 +1,39 @@
-<<<<<<< HEAD
 import React, { useEffect, useState } from "react";
 import { Button, Container, Row, Col, Table, Alert, Pagination } from "react-bootstrap";
-=======
-import { useEffect, useState } from "react";
-import { Button, Container, Row, Col, Table, Alert } from "react-bootstrap";
->>>>>>> 37684c18477273c58e6c2f92038d87330bdfb3f9
 import { FaSyncAlt } from "react-icons/fa";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import axiosClient from "../libs/axios-client";
 import PropTypes from "prop-types";
+import TemplateAccountDetailReport from "./TemplateAccountDetailReport"
+import ExportButton from "./ExcelAccountDetailReport";
 
-const ReportPage = () => {
-  const [formData, setFormData] = useState([]);  
+const sortvoucherNumber = (data) => {
+  const sortedData = [...data];
+  
+  const isParentOf = (parent, child) => {
+    return child.voucherNumber.startsWith(parent.voucherNumber) && 
+           child.voucherNumber.length > parent.voucherNumber.length;
+  };
+  
+  sortedData.sort((a, b) => {
+    if (isParentOf(a, b)) return -1;
+    
+    if (isParentOf(b, a)) return 1;
+    
+    return a.voucherNumber.localeCompare(b.voucherNumber);
+  });
+  
+  return sortedData;
+};
+
+const ReportPage = (initialData) => {
+  const [formData, setFormData] = useState([]);
   const [error, setError] = useState("");
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [filterText, setFilterText] = useState("Hiển thị tất cả dữ liệu");
+  const [show, setShow] = useState(false);
 
   // Trạng thái phân trang
   const [currentPage, setCurrentPage] = useState(0);
@@ -24,8 +41,19 @@ const ReportPage = () => {
   const pageSize = 20; // Số bản ghi mỗi trang
 
   useEffect(() => {
-    fetchData();
-  }, [currentPage]); // Fetch lại khi trang thay đổi
+    fetchData(startDate, endDate);
+  }, [currentPage, startDate, endDate]);   
+  
+  const handleExport = () => {
+    setShow(true);
+
+    setTimeout(() => {
+      const printButton = document.querySelector('#print');
+      if (printButton) {
+        printButton.click();
+      }
+    }, 100);
+  };
 
   const fetchData = async (start = null, end = null) => {
     try {
@@ -33,22 +61,22 @@ const ReportPage = () => {
       if (start && end) {
         url += `&startDate=${start.toISOString().split("T")[0]}&endDate=${end.toISOString().split("T")[0]}`;
       }
-
+  
       const res = await axiosClient.get(url);
-      console.log("Dữ liệu API:", res.data);
-
+      console.log("Dữ liệu API nhận được:", res.data);
+  
       if (res.data && res.data.content) {
-        setFormData(res.data.content);
-        setTotalPages(res.data.totalPages); // Cập nhật tổng số trang
+        setFormData(sortvoucherNumber(res.data.content || []));
+        setTotalPages(res.data.totalPages);
       } else {
         setFormData([]);
         setTotalPages(1);
       }
     } catch (error) {
-      console.error("Lỗi khi lấy dữ liệu:", error);
+      console.error("Lỗi lấy dữ liệu:", error);
       setError("Không thể lấy dữ liệu. Vui lòng thử lại!");
     }
-  };
+  };  
 
   const handleFilter = () => {
     setError("");
@@ -72,8 +100,9 @@ const ReportPage = () => {
           <h5 className="m-0 fw-bold text-dark">Báo cáo chi tiết tài khoản</h5>
         </Col>
         <Col xs="auto" className="d-flex gap-2">
-          <Button variant="success" size="sm">Xuất</Button>
-          <Button variant="info" size="sm">In</Button>
+          <ExportButton data={formData} />
+          <Button variant="info" size="sm" onClick={handleExport}>In</Button>
+          {show && <TemplateAccountDetailReport data={formData} setShow={setShow} /> }
           <Button variant="warning" size="sm" onClick={() => window.location.reload()}>
             <FaSyncAlt />
           </Button>
@@ -89,6 +118,7 @@ const ReportPage = () => {
             dateFormat="dd/MM/yyyy"
             className="form-control"
             placeholderText="Chọn ngày bắt đầu"
+            popperPlacement="bottom-start"
           />
         </Col>
         <Col xs="auto">
@@ -98,6 +128,7 @@ const ReportPage = () => {
             dateFormat="dd/MM/yyyy"
             className="form-control"
             placeholderText="Chọn ngày kết thúc"
+            popperPlacement="bottom-start"
           />
         </Col>
         <Col xs="auto">
@@ -169,6 +200,21 @@ const ReportPage = () => {
       </Pagination>
     </Container>
   );
+};
+
+ReportPage.propTypes = {
+  onSubmit: PropTypes.func.isRequired,
+  onClose: PropTypes.func.isRequired,
+  initialData: PropTypes.shape({
+    date: PropTypes.string,
+    voucherNumber: PropTypes.string,
+    description: PropTypes.string,
+    oppositeAccount: PropTypes.string,
+    debitAmount: PropTypes.string,
+    creditAmount: PropTypes.string,    
+    debitBalance: PropTypes.string,
+    creditBalance: PropTypes.string,
+  }),
 };
 
 export default ReportPage;
