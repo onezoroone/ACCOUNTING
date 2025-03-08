@@ -8,13 +8,13 @@ import ReceiptVoucher from "./components/ReceiptVoucher";
 import PaymentVoucher from "./components/PaymentVoucher";
 import OtherVoucher from "./components/OtherVoucher";
 import PartnerGroupPage from "./pages/PartnerGroupPage";
-import VouchersPage from "./pages/VouchersPage";
 import AccountDetailReport from "./components/AccountDetailReport";
 import TrialBalanceReport from "./components/TrialBalanceReport";
 import UserPage from "./pages/UserPage";
 import CurrencyPage from "./pages/CurrencyPage";
 import PermissionPage from "./pages/PermissionPage";
 import RolePage from "./pages/RolePage";
+import VouchersPage from "./pages/VouchersPage";
 
 const router = createBrowserRouter([
     {

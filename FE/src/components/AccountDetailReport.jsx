@@ -1,5 +1,10 @@
+<<<<<<< HEAD
 import React, { useEffect, useState } from "react";
 import { Button, Container, Row, Col, Table, Alert, Pagination } from "react-bootstrap";
+=======
+import { useEffect, useState } from "react";
+import { Button, Container, Row, Col, Table, Alert } from "react-bootstrap";
+>>>>>>> 37684c18477273c58e6c2f92038d87330bdfb3f9
 import { FaSyncAlt } from "react-icons/fa";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";

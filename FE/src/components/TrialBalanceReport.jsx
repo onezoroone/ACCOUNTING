@@ -1,17 +1,55 @@
+<<<<<<< HEAD
 import React, { useEffect, useState } from "react";
 import { Button, Container, Row, Col, Table, Alert, Pagination } from "react-bootstrap";
+=======
+import { useEffect, useState } from "react";
+import { Button, Container, Row, Col, Table, Alert } from "react-bootstrap";
+>>>>>>> 37684c18477273c58e6c2f92038d87330bdfb3f9
 import { FaSyncAlt } from "react-icons/fa";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import axiosClient from "../libs/axios-client";
 import PropTypes from "prop-types";
+import TemplateTrialBalanceReport from "./TemplateTrialBalanceReport";
+import ExportButton from "./ExcelTrialBalanceReport";
 
+<<<<<<< HEAD
 const ReportPage = ({ initialData }) => {
   const [formData, setFormData] = useState([]);
   const [error, setError] = useState("");
+=======
+const sortAccountCodes = (data) => {
+  const sortedData = [...data];
+  
+  const isParentOf = (parent, child) => {
+    return child.accountCode.startsWith(parent.accountCode) && 
+           child.accountCode.length > parent.accountCode.length;
+  };
+  
+  sortedData.sort((a, b) => {
+    if (isParentOf(a, b)) return -1;
+    
+    if (isParentOf(b, a)) return 1;
+    
+    return a.accountCode.localeCompare(b.accountCode);
+  });
+  
+  return sortedData;
+};
+
+const ReportPage = ({initialData}) => {
+  const [formData, setFormData] = useState(
+    initialData || { accountCode: "", accountName: "",
+                     debitOpening: "", creditOpening: "",
+                     debitTransaction: "", creditTransaction: "",
+                     debitClosing: "", creditClosing: "",
+                     }
+  );  const [error, setError] = useState("");
+>>>>>>> 37684c18477273c58e6c2f92038d87330bdfb3f9
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [filterText, setFilterText] = useState("Hiển thị tất cả dữ liệu");
+  const [show, setShow] = useState(false);
 
   // Phân trang
   const [currentPage, setCurrentPage] = useState(1);
@@ -20,6 +58,17 @@ const ReportPage = ({ initialData }) => {
   useEffect(() => {
     fetchData();
   }, []);
+
+  const handleExport = () => {
+    setShow(true);
+
+    setTimeout(() => {
+      const printButton = document.querySelector('#print');
+      if (printButton) {
+        printButton.click();
+      }
+    }, 100);
+  };
 
   const fetchData = async (start = null, end = null) => {
     try {
@@ -31,8 +80,9 @@ const ReportPage = ({ initialData }) => {
       const res = await axiosClient.get(url);
       console.log("Dữ liệu API:", res.data);
 
-      if (res.data && res.data.content) {
-        setFormData(res.data.content);
+      if (res.data) {
+        const sortedData = sortAccountCodes(res.data);
+        setFormData(sortedData);
       } else {
         setFormData([]);
       }
@@ -73,14 +123,15 @@ const ReportPage = ({ initialData }) => {
   }
 
   return (
-    <Container fluid className="p-3">
+    <Container fluid className="card p-3">
       <Row className="d-flex justify-content-between align-items-center mb-3">
         <Col xs="auto">
           <h5 className="m-0 fw-bold text-dark">Báo cáo sổ cân đối phát sinh</h5>
         </Col>
         <Col xs="auto" className="d-flex gap-2">
-          <Button variant="success" size="sm">Xuất</Button>
-          <Button variant="info" size="sm">In</Button>
+          <ExportButton data={formData} />
+          <Button variant="info" size="sm" onClick={handleExport}>In</Button>
+          {show && <TemplateTrialBalanceReport data={formData} setShow={setShow} /> }
           <Button variant="warning" size="sm" onClick={() => window.location.reload()}>
             <FaSyncAlt />
           </Button>
