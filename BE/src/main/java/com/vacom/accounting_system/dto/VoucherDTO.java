@@ -30,6 +30,8 @@ public class VoucherDTO {
 
     private Double exchangeRate;
 
+    private Double totalAmount;
+
     @NotEmpty(message = "At least one voucher detail is required")
     private List<VoucherDetailDTO> details;
 }

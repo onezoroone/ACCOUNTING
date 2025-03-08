@@ -10,6 +10,7 @@ public class VoucherResponseDTO {
     private Integer Id;
     private String voucherNumber;
     private Date voucherDate;
+    private String voucherType;
     private String entityCode;
     private String entityName;
     private String createBy;
