@@ -6,6 +6,25 @@ import axiosClient from "../libs/axios-client";
 import withReactContent from "sweetalert2-react-content";
 import Swal from "sweetalert2";
 
+const sortAccountCodes = (data) => {
+  const sortedData = [...data];
+  
+  const isParentOf = (parent, child) => {
+    return child.accountCode.startsWith(parent.accountCode) && 
+           child.accountCode.length > parent.accountCode.length;
+  };
+  
+  sortedData.sort((a, b) => {
+    if (isParentOf(a, b)) return -1;
+    
+    if (isParentOf(b, a)) return 1;
+    
+    return a.accountCode.localeCompare(b.accountCode);
+  });
+  
+  return sortedData;
+};
+
 const AccountPage = () => {
   const [data, setData] = useState([]);
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -19,7 +38,8 @@ const AccountPage = () => {
     const fetchData = async () => {
       await axiosClient.get('/master-data/accounts')
         .then((res) => {
-          setData(res.data);
+          const sortedData = sortAccountCodes(res.data);
+          setData(sortedData);
         })
         .catch((err) => {
           console.error(err);

@@ -1,4 +1,3 @@
-import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Link } from "react-router-dom";
 
@@ -59,9 +58,10 @@ const VoucherManagementForm = () => {
               <td></td>
               <td></td>
               <td>
-                <button className="btn btn-sm btn-outline-primary mx-1">✏️</button>
-                <button className="btn btn-sm btn-outline-danger">🗑️</button>
+                <button className="btn btn-sm btn-light border mx-1">✏️</button>
+                <button className="btn btn-sm btn-light border">🗑️</button>
               </td>
+
             </tr>
           ))}
         </tbody>

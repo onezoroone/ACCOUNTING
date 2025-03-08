@@ -1,9 +1,13 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Table, Button, Form } from "react-bootstrap";
 import PartnersModal from "./PartnersModal";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 const ReceiptVoucher = () => {
+  const location = useLocation();
+  const data = location.state ? location.state.data : null;
+  const [voucher, setVoucher] = useState(data);
+  console.log(voucher);
   const [entries, setEntries] = useState([
     { account_debit: "", account_credit: "", amount: "", entity_code: "", entity_name: "", description: "" }
   ]);
