@@ -83,12 +83,12 @@ const ReportPage = (initialData) => {
   const handleExport = () => {
     setShow(true);
 
-    // setTimeout(() => {
-    //   const printButton = document.querySelector('#print');
-    //   if (printButton) {
-    //     printButton.click();
-    //   }
-    // }, 100);
+    setTimeout(() => {
+      const printButton = document.querySelector('#print');
+      if (printButton) {
+        printButton.click();
+      }
+    }, 100);
   };
 
   const handleSelectAccount = async () => {
@@ -103,14 +103,14 @@ const ReportPage = (initialData) => {
   }
 
   return (
-    <Container fluid className="p-3">
+    <Container fluid className="card p-3">
       {/* Thanh công cụ trên */}
       <Row className="d-flex justify-content-between align-items-center mb-3">
         <Col xs="auto">
           <h5 className="m-0 fw-bold text-dark">Báo cáo chi tiết tài khoản</h5>
         </Col>
         <Col xs="auto" className="d-flex gap-2">
-          <Button variant="success" size="sm">Xuất</Button>
+          {/* <Button variant="success" size="sm">Xuất</Button> */}
           <Button variant="info" size="sm" onClick={handleExport}>In</Button>
           {show && <TemplateAccountDetailReport data={formData} setShow={setShow} startDate={startDate} endDate={endDate} accountCodes={accountCodes} />}
           <Button variant="warning" size="sm" onClick={() => window.location.reload()}>
