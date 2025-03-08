@@ -1,15 +1,11 @@
 package com.vacom.accounting_system.service;
 
 import com.vacom.accounting_system.dto.TrialBalanceDTO;
-import com.vacom.accounting_system.dto.response.TrialBalanceResponseDTO;
 import com.vacom.accounting_system.entity.Account;
 import com.vacom.accounting_system.entity.VoucherDetail;
 import com.vacom.accounting_system.repository.AccountRepository;
 import com.vacom.accounting_system.repository.VoucherDetailRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.Calendar;
@@ -24,9 +20,7 @@ public class TrialBalanceService {
     private final VoucherDetailRepository voucherDetailRepository;
     private final AccountRepository accountRepository;
 
-    public Page<TrialBalanceResponseDTO> getTrialBalance(Pageable pageable, Date startDate, Date endDate) {
-        Specification<VoucherDetail> spec = Specification.where(null);
-
+    public List<TrialBalanceDTO> getTrialBalance(Date startDate, Date endDate) {
         // Nếu không có startDate, lấy mặc định là đầu năm hiện tại
         if (startDate == null) {
             Calendar calendar = Calendar.getInstance();
@@ -42,9 +36,7 @@ public class TrialBalanceService {
         List<VoucherDetail> openingDetails = voucherDetailRepository.findByVoucherVoucherDateBefore(startDate);
         List<VoucherDetail> periodDetails = voucherDetailRepository.findByVoucherVoucherDateBetween(startDate, endDate);
 
-        Page<Account> accountPage = accountRepository.findAll(pageable);
-
-        return accountPage.map(account -> {
+        return accountRepository.findAll().stream().map(account -> {
             Double debitOpening = calculateOpeningDebit(openingDetails, account);
             Double creditOpening = calculateOpeningCredit(openingDetails, account);
             Double debitTransaction = calculateTransactionDebit(periodDetails, account);
@@ -53,9 +45,10 @@ public class TrialBalanceService {
             Double debitClosing = debitOpening + debitTransaction - creditTransaction;
             Double creditClosing = creditOpening + creditTransaction - debitTransaction;
 
-            return new TrialBalanceResponseDTO(
+            return new TrialBalanceDTO(
                     account.getAccountCode(),
                     account.getAccountName(),
+                    account.getParentId(),
                     debitOpening,
                     creditOpening,
                     debitTransaction,
@@ -63,7 +56,7 @@ public class TrialBalanceService {
                     debitClosing,
                     creditClosing
             );
-        });
+        }).collect(Collectors.toList());
     }
 
     public TrialBalanceDTO getTrialBalanceByAccountCode(String accountCode, Date startDate, Date endDate) {
@@ -83,6 +76,7 @@ public class TrialBalanceService {
         return new TrialBalanceDTO(
                 account.getAccountCode(),
                 account.getAccountName(),
+                account.getParentId(),
                 debitOpening,
                 creditOpening,
                 debitTransaction,
