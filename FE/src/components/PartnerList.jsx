@@ -6,6 +6,10 @@ const PartnerList = ({ data, onDelete, onEdit, onAdd }) => {
   return (
     <div className="table-responsive">
       <h2 className="text-center mb-3">Danh sách Đối tượng</h2>
+      <div>
+              {/* Nút Thêm mới */}
+      <Button variant="primary" className="mb-3" onClick={onAdd}>Thêm mới</Button>
+      </div>
       <Table striped bordered hover responsive className="w-100">
         <thead className="table-primary">
           <tr>
@@ -40,7 +44,6 @@ const PartnerList = ({ data, onDelete, onEdit, onAdd }) => {
           ))}
         </tbody>
       </Table>
-      <Button variant="primary" onClick={onAdd}>Thêm mới</Button>
     </div>
   );
 };

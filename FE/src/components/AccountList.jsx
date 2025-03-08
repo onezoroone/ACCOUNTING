@@ -5,6 +5,10 @@ const AccountList = ({ data, onEdit, onDelete, onAdd }) => {
   return (
     <div className="table-responsive">
       <h2 className="text-center mb-3">Danh sách Tài Khoản</h2>
+      <div>
+              {/* Nút Thêm mới */}
+      <Button variant="primary" className="mb-3" onClick={onAdd}>Thêm mới</Button>
+      </div>
       <Table striped bordered hover responsive className="w-100">
         <thead className="table-primary">
           <tr>
@@ -35,9 +39,6 @@ const AccountList = ({ data, onEdit, onDelete, onAdd }) => {
           ))}
         </tbody>
       </Table>
-      <div className="d-flex justify-content-start ">
-      <Button variant="primary" onClick={onAdd}>Thêm mới</Button>
-      </div>
     </div>
   );
 };
