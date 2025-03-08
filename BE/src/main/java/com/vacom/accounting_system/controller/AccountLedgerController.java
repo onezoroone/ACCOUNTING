@@ -1,6 +1,7 @@
 package com.vacom.accounting_system.controller;
 
 import com.vacom.accounting_system.dto.AccountLedgerReportDTO;
+import com.vacom.accounting_system.dto.response.ApiResponse;
 import com.vacom.accounting_system.entity.VoucherDetail;
 import com.vacom.accounting_system.service.AccountLedgerService;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -11,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -29,23 +31,30 @@ public class AccountLedgerController {
 
     @GetMapping
     @PreAuthorize("hasAnyAuthority('VIEW_ACCOUNT_LEDGER')")
-    public ResponseEntity<Page<AccountLedgerReportDTO>> getAccountLedgerReport(
+    public ResponseEntity<ApiResponse<List<AccountLedgerReportDTO>>> getAccountLedgerReport(
             @RequestParam(required = false) List<String> accountCodes,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate,
             @RequestParam(required = false) String voucherNumberContains,
             @RequestParam(required = false) String descriptionContains,
-            @RequestParam(required = false, name = "oppositeAccount") List<String> oppositeAccounts,
-            @PageableDefault(page = 0, size = 20, sort = {"voucherDate", "voucherNumber"}, direction = Sort.Direction.ASC) Pageable pageable) {
+            @RequestParam(required = false, name = "oppositeAccount") List<String> oppositeAccounts) {
 
         // If accountCode is null or empty, fetch all account codes
         if (accountCodes == null || accountCodes.isEmpty()) {
             accountCodes = accountLedgerService.getAllAccountCodes();
         }
 
-        Page<AccountLedgerReportDTO> report = accountLedgerService.getAccountLedgerReport(
-                accountCodes, startDate, endDate, voucherNumberContains, descriptionContains, oppositeAccounts, pageable);
-        return ResponseEntity.ok(report);
+        List<AccountLedgerReportDTO> reportData = accountLedgerService.getAccountLedgerReport(
+                accountCodes, startDate, endDate, voucherNumberContains, descriptionContains, oppositeAccounts);
+
+        ApiResponse<List<AccountLedgerReportDTO>> response = new ApiResponse<>(
+                HttpStatus.OK.value(),
+                new Date(),
+                "Lấy dữ liệu báo cáo sổ chi tiết tài khoản thành công",
+                reportData
+        );
+
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping

@@ -4,6 +4,7 @@ import com.vacom.accounting_system.dto.AccountLedgerReportDTO;
 import com.vacom.accounting_system.entity.Account;
 import com.vacom.accounting_system.entity.Voucher;
 import com.vacom.accounting_system.entity.VoucherDetail;
+import com.vacom.accounting_system.exception.ResourceNotFoundException;
 import com.vacom.accounting_system.repository.AccountRepository;
 import com.vacom.accounting_system.repository.VoucherDetailRepository;
 import com.vacom.accounting_system.repository.VoucherRepository;
@@ -29,11 +30,11 @@ public class AccountLedgerService {
     private final VoucherRepository voucherRepository;
     private final VoucherDetailRepository voucherDetailRepository;
 
-    public Page<AccountLedgerReportDTO> getAccountLedgerReport(List<String> accountCodes, Date startDate, Date endDate,
+    public List<AccountLedgerReportDTO> getAccountLedgerReport(List<String> accountCodes, Date startDate, Date endDate,
                                                                String voucherNumberContains, String descriptionContains,
-                                                               List<String> oppositeAccounts, Pageable pageable) {
+                                                               List<String> oppositeAccounts) {
         if (accountCodes == null || accountCodes.isEmpty()) {
-            return new PageImpl<>(new ArrayList<>(), pageable, 0);
+            return new ArrayList<>();
         }
 
         List<String> validAccountCodes = accountRepository.findAllByAccountCodeIn(accountCodes)
@@ -42,7 +43,10 @@ public class AccountLedgerService {
                 .toList();
 
         if (validAccountCodes.size() < accountCodes.size()) {
-            throw new IllegalArgumentException("Một số mã tài khoản không hợp lệ: " + accountCodes);
+                List<String> missingAccounts = accountCodes.stream()
+                    .filter(code -> !validAccountCodes.contains(code))
+                    .collect(Collectors.toList());
+            throw new ResourceNotFoundException("Đối tượng", "accountCodes", missingAccounts.getFirst());
         }
 
         List<Voucher> allVouchers;
@@ -106,16 +110,7 @@ public class AccountLedgerService {
             }
         }
 
-        // Phân trang kết quả đã lọc
-        int start = (int) pageable.getOffset();
-        int end = Math.min((start + pageable.getPageSize()), report.size());
-
-        if (start >= report.size()) {
-            return new PageImpl<>(new ArrayList<>(), pageable, report.size());
-        }
-
-        List<AccountLedgerReportDTO> pageContent = report.subList(start, end);
-        return new PageImpl<>(pageContent, pageable, report.size());
+        return report;
     }
 
     // Create, Update, Delete giữ nguyên
