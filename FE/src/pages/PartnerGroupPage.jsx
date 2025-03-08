@@ -10,7 +10,6 @@ import Swal from "sweetalert2";
 const PartnerGroupPage = () => {
   const [data, setData] = useState([]); // Danh sách nhóm đối tượng
   const [isFormOpen, setIsFormOpen] = useState(false);
-  const [editIndex, setEditIndex] = useState(null);
   const [reload, setReload] = useState(false);
   const MySwal = withReactContent(Swal);
   const [selectedEntity, setSelectedEntity] = useState(null);

@@ -2,7 +2,7 @@ import PropTypes from "prop-types";
 import { useRef } from "react";
 import { useReactToPrint } from "react-to-print";
 
-function TemplateTrialBalanceReport({data, setShow}) {
+function TemplateTrialBalanceReport({data, setShow, startDate, endDate}) {
     const contentRef = useRef({});
     const reactToPrintFn = useReactToPrint({
         contentRef: contentRef,
@@ -58,7 +58,7 @@ function TemplateTrialBalanceReport({data, setShow}) {
                         </div>
                         <div className="text-center mb-1" >
                             <h4 className="fw-bold mb-1">BẢNG CÂN ĐỐI SỔ PHÁT SINH</h4>
-                            <p className="mb-0">Từ ngày 01/01/2021 đến ngày 31/01/2021</p>
+                            <p className="mb-0">Từ ngày {startDate} đến ngày {endDate}</p>
                         </div>
                         <div className="text-end">
                             <p>Đơn vị tính: VND</p>
@@ -144,7 +144,9 @@ TemplateTrialBalanceReport.propTypes = {
     creditTransaction: PropTypes.string,    
     debitClosing: PropTypes.string,
     creditClosing: PropTypes.string,
-  }))
+  })),
+  startDate: PropTypes.string,
+  endDate: PropTypes.string,
 };
 
 export default TemplateTrialBalanceReport;

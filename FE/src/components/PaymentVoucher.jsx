@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Table, Button, Form } from "react-bootstrap";
 import PartnersModal from "./PartnersModal";
 import { Link } from "react-router-dom";

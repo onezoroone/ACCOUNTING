@@ -93,7 +93,7 @@ function TemplateAccountDetailReport({data, setShow}) {
                                 </tr>
                                 {data.map((item, index) => (
                                     <tr key={index} className={item.parentId ? '' : 'fw-bold'}>
-                                        <td>{item.date ? new Date(item.date).toLocaleDateString('vi-VN') : ''}</td>
+                                        <td>{item.date ? new Date(item.date).toLocaleDateString('vi-VN'): ''}</td>
                                         <td>{item.voucherNumber}</td>
                                         <td>{item.description}</td>
                                         <td>{item.oppositeAccount}</td>

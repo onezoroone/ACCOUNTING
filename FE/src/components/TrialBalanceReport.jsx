@@ -44,6 +44,18 @@ const ReportPage = ({initialData}) => {
     fetchData();
   }, []);
 
+  useEffect(() => {
+    const currentDate = new Date();
+  
+    if (!startDate) {
+      setStartDate(new Date(currentDate.getFullYear(), 0, 1));
+    }
+  
+    if (!endDate) {
+      setEndDate(currentDate);
+    }
+  }, [startDate, endDate]);
+
   const handleExport = () => {
     setShow(true);
 
@@ -63,7 +75,6 @@ const ReportPage = ({initialData}) => {
       }
       
       const res = await axiosClient.get(url);
-      console.log("Dữ liệu API:", res.data);
 
       if (res.data) {
         const sortedData = sortAccountCodes(res.data);
@@ -103,7 +114,7 @@ const ReportPage = ({initialData}) => {
         <Col xs="auto" className="d-flex gap-2">
           <ExportButton data={formData} />
           <Button variant="info" size="sm" onClick={handleExport}>In</Button>
-          {show && <TemplateTrialBalanceReport data={formData} setShow={setShow} /> }
+          {show && <TemplateTrialBalanceReport data={formData} setShow={setShow} startDate={startDate.toLocaleDateString()} endDate={endDate.toLocaleDateString()} /> }
           <Button variant="warning" size="sm" onClick={() => window.location.reload()}>
             <FaSyncAlt />
           </Button>
