@@ -1,41 +1,43 @@
 import React, { useEffect, useState } from "react";
-import { Button, Container, Row, Col, Table, Alert } from "react-bootstrap";
+import { Button, Container, Row, Col, Table, Alert, Pagination } from "react-bootstrap";
 import { FaSyncAlt } from "react-icons/fa";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import axiosClient from "../libs/axios-client";
 import PropTypes from "prop-types";
 
-const ReportPage = (initialData) => {
-    const [formData, setFormData] = useState(
-      initialData || { date: "", voucherNumber: "",
-        description: "", oppositeAccount: "",
-        debitAmount: "", creditAmount: "",
-        debitBalance: "", creditBalance: "",
-                       }
-    );  const [error, setError] = useState("");
+const ReportPage = () => {
+  const [formData, setFormData] = useState([]);  
+  const [error, setError] = useState("");
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [filterText, setFilterText] = useState("Hiển thị tất cả dữ liệu");
 
+  // Trạng thái phân trang
+  const [currentPage, setCurrentPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
+  const pageSize = 20; // Số bản ghi mỗi trang
+
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [currentPage]); // Fetch lại khi trang thay đổi
 
   const fetchData = async (start = null, end = null) => {
     try {
-      let url = "/reports/account-ledger";
+      let url = `/reports/account-ledger?page=${currentPage}&size=${pageSize}`;
       if (start && end) {
-        url += `?startDate=${start.toISOString().split("T")[0]}&endDate=${end.toISOString().split("T")[0]}`;
+        url += `&startDate=${start.toISOString().split("T")[0]}&endDate=${end.toISOString().split("T")[0]}`;
       }
-      
+
       const res = await axiosClient.get(url);
       console.log("Dữ liệu API:", res.data);
 
       if (res.data && res.data.content) {
         setFormData(res.data.content);
+        setTotalPages(res.data.totalPages); // Cập nhật tổng số trang
       } else {
         setFormData([]);
+        setTotalPages(1);
       }
     } catch (error) {
       console.error("Lỗi khi lấy dữ liệu:", error);
@@ -44,25 +46,22 @@ const ReportPage = (initialData) => {
   };
 
   const handleFilter = () => {
-    setError(""); // Reset lỗi trước khi lọc
-
+    setError("");
     if (!startDate || !endDate) {
       setError("Vui lòng chọn đầy đủ ngày bắt đầu và ngày kết thúc.");
       return;
     }
-
     if (startDate > endDate) {
       setError("Ngày kết thúc phải lớn hơn hoặc bằng ngày bắt đầu.");
       return;
     }
-
     setFilterText(`Lọc từ ${startDate.toLocaleDateString()} đến ${endDate.toLocaleDateString()}`);
+    setCurrentPage(0); // Quay về trang đầu khi lọc
     fetchData(startDate, endDate);
   };
 
   return (
     <Container fluid className="p-3">
-      {/* Thanh công cụ trên */}
       <Row className="d-flex justify-content-between align-items-center mb-3">
         <Col xs="auto">
           <h5 className="m-0 fw-bold text-dark">Báo cáo chi tiết tài khoản</h5>
@@ -85,10 +84,8 @@ const ReportPage = (initialData) => {
             dateFormat="dd/MM/yyyy"
             className="form-control"
             placeholderText="Chọn ngày bắt đầu"
-            popperPlacement="bottom-start"
           />
         </Col>
-
         <Col xs="auto">
           <DatePicker
             selected={endDate}
@@ -96,16 +93,14 @@ const ReportPage = (initialData) => {
             dateFormat="dd/MM/yyyy"
             className="form-control"
             placeholderText="Chọn ngày kết thúc"
-            popperPlacement="bottom-start"
           />
         </Col>
-
         <Col xs="auto">
           <Button variant="primary" onClick={handleFilter}>Lọc</Button>
         </Col>
       </Row>
 
-      {/* Hiển thị lỗi nếu có */}
+      {/* Hiển thị lỗi */}
       {error && (
         <Row className="mb-2">
           <Col>
@@ -140,7 +135,7 @@ const ReportPage = (initialData) => {
           {formData.length > 0 ? (
             formData.map((item, index) => (
               <tr key={index}>
-                <td>{index + 1}</td>
+                <td>{index + 1 + currentPage * pageSize}</td>
                 <td>{item.date}</td>
                 <td>{item.voucherNumber}</td>
                 <td>{item.description}</td>
@@ -158,23 +153,17 @@ const ReportPage = (initialData) => {
           )}
         </tbody>
       </Table>
+
+      {/* Phân trang */}
+      <Pagination className="justify-content-center">
+        <Pagination.First onClick={() => setCurrentPage(0)} disabled={currentPage === 0} />
+        <Pagination.Prev onClick={() => setCurrentPage(prev => Math.max(prev - 1, 0))} disabled={currentPage === 0} />
+        <Pagination.Item>{currentPage + 1} / {totalPages}</Pagination.Item>
+        <Pagination.Next onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages - 1))} disabled={currentPage === totalPages - 1} />
+        <Pagination.Last onClick={() => setCurrentPage(totalPages - 1)} disabled={currentPage === totalPages - 1} />
+      </Pagination>
     </Container>
   );
-};
-
-ReportPage.propTypes = {
-  onSubmit: PropTypes.func.isRequired,
-  onClose: PropTypes.func.isRequired,
-  initialData: PropTypes.shape({
-    date: PropTypes.string,
-    voucherNumber: PropTypes.string,
-    description: PropTypes.string,
-    oppositeAccount: PropTypes.string,
-    debitAmount: PropTypes.string,
-    creditAmount: PropTypes.string,    
-    debitBalance: PropTypes.string,
-    creditBalance: PropTypes.string,
-  }),
 };
 
 export default ReportPage;
