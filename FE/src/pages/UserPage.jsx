@@ -173,7 +173,7 @@ function UserPage() {
   return (
     <div className="card col-12 p-3">
       <h2 className="text-center">Quản lý người dùng</h2>
-      <div className="mb-3">
+      <div className="d-flex justify-content-end mb-3">
         <Button variant="primary" onClick={handleShow}>
           Thêm mới
         </Button>
