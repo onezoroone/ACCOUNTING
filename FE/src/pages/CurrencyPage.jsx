@@ -13,14 +13,14 @@ function CurrencyPage() {
     const [reload, setReload] = useState(false);
 
     useEffect(() => {
-        const fetchData = async () => {
-            axiosClient.get("/master-data/currencies")
-                .then((response) => {
-                    setCurrencies(response.data);
-                });
-        };
-        fetchData();
-    }, [reload]);
+      axiosClient.get("/master-data/currencies")
+          .then((response) => {
+              setCurrencies(response.data);
+          })
+          .catch(error => {
+              console.error("Lỗi khi tải danh sách tiền tệ:", error);
+          });
+  }, [reload]);  
     
     const handleShow = (currency = null) => {
         setEditData(currency);

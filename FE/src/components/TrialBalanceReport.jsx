@@ -1,14 +1,48 @@
-import { useState } from "react";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
+import React, { useEffect, useState } from "react";
 import { Button, Container, Row, Col, Table, Alert } from "react-bootstrap";
 import { FaSyncAlt } from "react-icons/fa";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import axiosClient from "../libs/axios-client";
+import PropTypes from "prop-types";
 
-const ReportPage = () => {
+
+const ReportPage = ({initialData}) => {
+  const [formData, setFormData] = useState(
+    initialData || { accountCode: "", accountName: "",
+                     debitOpening: "", creditOpening: "",
+                     debitTransaction: "", creditTransaction: "",
+                     debitClosing: "", creditClosing: "",
+                     }
+  );  const [error, setError] = useState("");
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
-  const [filterText, setFilterText] = useState("Chưa chọn thời gian");
-  const [error, setError] = useState("");
+  const [filterText, setFilterText] = useState("Hiển thị tất cả dữ liệu");
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = async (start = null, end = null) => {
+    try {
+      let url = "/reports/trial-balance";
+      if (start && end) {
+        url += `?startDate=${start.toISOString().split("T")[0]}&endDate=${end.toISOString().split("T")[0]}`;
+      }
+      
+      const res = await axiosClient.get(url);
+      console.log("Dữ liệu API:", res.data);
+
+      if (res.data && res.data.content) {
+        setFormData(res.data.content);
+      } else {
+        setFormData([]);
+      }
+    } catch (error) {
+      console.error("Lỗi khi lấy dữ liệu:", error);
+      setError("Không thể lấy dữ liệu. Vui lòng thử lại!");
+    }
+  };
 
   const handleFilter = () => {
     setError(""); // Reset lỗi trước khi lọc
@@ -24,11 +58,11 @@ const ReportPage = () => {
     }
 
     setFilterText(`Lọc từ ${startDate.toLocaleDateString()} đến ${endDate.toLocaleDateString()}`);
+    fetchData(startDate, endDate);
   };
 
   return (
     <Container fluid className="p-3">
-      {/* Thanh công cụ trên */}
       <Row className="d-flex justify-content-between align-items-center mb-3">
         <Col xs="auto">
           <h5 className="m-0 fw-bold text-dark">Báo cáo sổ cân đối phát sinh</h5>
@@ -36,7 +70,9 @@ const ReportPage = () => {
         <Col xs="auto" className="d-flex gap-2">
           <Button variant="success" size="sm">Xuất</Button>
           <Button variant="info" size="sm">In</Button>
-          <Button variant="warning" size="sm"><FaSyncAlt /></Button>
+          <Button variant="warning" size="sm" onClick={() => window.location.reload()}>
+            <FaSyncAlt />
+          </Button>
         </Col>
       </Row>
 
@@ -85,22 +121,58 @@ const ReportPage = () => {
         </Col>
       </Row>
 
-      {/* Bảng dữ liệu */}
       <Table bordered hover className="table text-center">
         <thead className="table-primary bg-primary text-white">
           <tr>
             <th>#</th>
             <th>Mã tài khoản</th>
             <th>Tên tài khoản</th>
-            <th>Số dư đầu kỳ</th>
-            <th>TK nợ</th>
-            <th>TK có</th>
-            <th>Số dư cuối kỳ</th>
+            <th>Số dư nợ đầu kỳ</th>
+            <th>Số dư có đầu kỳ</th>
+            <th>Phát sinh nợ</th>
+            <th>Phát sinh có</th>
+            <th>Số dư nợ cuối kỳ</th>
+            <th>Số dư có cuối kỳ</th>
           </tr>
         </thead>
+        <tbody>
+          {formData.length > 0 ? (
+            formData.map((item, index) => (
+              <tr key={index}>
+                <td>{index + 1}</td>
+                <td>{item.accountCode}</td>
+                <td>{item.accountName}</td>
+                <td>{item.debitOpening.toLocaleString()}</td>
+                <td>{item.creditOpening.toLocaleString()}</td>
+                <td>{item.debitTransaction.toLocaleString()}</td>
+                <td>{item.creditTransaction.toLocaleString()}</td>
+                <td>{item.debitClosing.toLocaleString()}</td>
+                <td>{item.creditClosing.toLocaleString()}</td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan={9} className="text-center">Không có dữ liệu</td>
+            </tr>
+          )}
+        </tbody>
       </Table>
     </Container>
   );
 };
 
+ReportPage.propTypes = {
+  onSubmit: PropTypes.func.isRequired,
+  onClose: PropTypes.func.isRequired,
+  initialData: PropTypes.shape({
+    accountCode: PropTypes.string,
+    accountName: PropTypes.string,
+    debitOpening: PropTypes.string,
+    creditOpening: PropTypes.string,
+    debitTransaction: PropTypes.string,
+    creditTransaction: PropTypes.string,    
+    debitClosing: PropTypes.string,
+    creditClosing: PropTypes.string,
+  }),
+};
 export default ReportPage;
