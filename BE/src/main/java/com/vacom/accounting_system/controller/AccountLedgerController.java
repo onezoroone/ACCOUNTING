@@ -5,6 +5,7 @@ import com.vacom.accounting_system.entity.VoucherDetail;
 import com.vacom.accounting_system.service.AccountLedgerService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -20,6 +21,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/reports/account-ledger")
 @RequiredArgsConstructor
+@Slf4j
 @Tag(name = "Báo cáo sổ chi tiết tài khoản", description = "API báo cáo sổ chi tiết tài khoản")
 public class AccountLedgerController {
 
@@ -28,15 +30,21 @@ public class AccountLedgerController {
     @GetMapping
     @PreAuthorize("hasAnyAuthority('VIEW_ACCOUNT_LEDGER')")
     public ResponseEntity<Page<AccountLedgerReportDTO>> getAccountLedgerReport(
-            @RequestParam List<String> accountCode,
+            @RequestParam(required = false) List<String> accountCodes,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate,
             @RequestParam(required = false) String voucherNumberContains,
             @RequestParam(required = false) String descriptionContains,
             @RequestParam(required = false, name = "oppositeAccount") List<String> oppositeAccounts,
             @PageableDefault(page = 0, size = 20, sort = {"voucherDate", "voucherNumber"}, direction = Sort.Direction.ASC) Pageable pageable) {
+
+        // If accountCode is null or empty, fetch all account codes
+        if (accountCodes == null || accountCodes.isEmpty()) {
+            accountCodes = accountLedgerService.getAllAccountCodes();
+        }
+
         Page<AccountLedgerReportDTO> report = accountLedgerService.getAccountLedgerReport(
-                accountCode, startDate, endDate, voucherNumberContains, descriptionContains, oppositeAccounts, pageable);
+                accountCodes, startDate, endDate, voucherNumberContains, descriptionContains, oppositeAccounts, pageable);
         return ResponseEntity.ok(report);
     }
 
@@ -57,7 +65,7 @@ public class AccountLedgerController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyAuthority('EDIT_VOUCHER')") // Giả sử DELETE cũng cần EDIT_VOUCHER
+    @PreAuthorize("hasAnyAuthority('EDIT_VOUCHER')")
     public ResponseEntity<Void> deleteVoucherDetail(@PathVariable Integer id) {
         accountLedgerService.deleteVoucherDetail(id);
         return ResponseEntity.noContent().build();

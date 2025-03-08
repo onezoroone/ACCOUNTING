@@ -5,11 +5,13 @@ import com.vacom.accounting_system.dto.VoucherDetailDTO;
 import com.vacom.accounting_system.dto.response.VoucherDetailResponseDTO;
 import com.vacom.accounting_system.dto.response.VoucherResponseDTO;
 import com.vacom.accounting_system.entity.*;
+import com.vacom.accounting_system.exception.EntityReferenceNotFoundException;
 import com.vacom.accounting_system.exception.ResourceAlreadyExistsException;
 import com.vacom.accounting_system.exception.ResourceNotFoundException;
 import com.vacom.accounting_system.repository.*;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
+//import jakarta.xml.bind.ValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,6 +20,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
+import com.vacom.accounting_system.exception.ValidationException;
 
 @Service
 @Transactional
@@ -41,7 +44,7 @@ public class VoucherService {
     @Autowired
     private UserRepository userRepository;
 
-    public VoucherResponseDTO createVoucher(VoucherDTO dto) {
+    public VoucherResponseDTO createVoucher (VoucherDTO dto) {
         // Kiểm tra voucher_number đã tồn tại chưa
         if (voucherRepository.existsByVoucherNumber(dto.getVoucherNumber())) {
             throw new ResourceAlreadyExistsException("Mã phiếu đã tồn tại: " + dto.getVoucherNumber());
@@ -54,6 +57,16 @@ public class VoucherService {
         // Kiểm tra currency
         Currency currency = currencyRepository.findByCurrencyCode(dto.getCurrencyCode())
                 .orElseThrow(() -> new ResourceNotFoundException("Loại tiền", "mã tiền", dto.getCurrencyCode()));
+
+        // Calculate total from details
+        double totalAmountOriginCheck = dto.getDetails().stream()
+                .mapToDouble(VoucherDetailDTO::getAmount)
+                .sum();
+
+        // Validate that provided total matches calculated total
+        if (Math.abs(dto.getTotalAmount() - totalAmountOriginCheck) > 0.01) {
+            throw new ValidationException("Tổng tiền không khớp với chi tiết phiếu");
+        }
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
@@ -145,6 +158,7 @@ public class VoucherService {
         response.setCurrentCode(currency.getCurrencyCode());
         response.setTotalAmount(voucher.getTotalAmount());
         response.setTotalAmountOrigin(voucher.getTotalAmountOrigin());
+        response.setVoucherType(voucher.getVoucherType());
         return response;
     }
 
@@ -153,10 +167,10 @@ public class VoucherService {
 
         return voucherPage.map(voucher -> {
             BusinessEntity entity = entityRepository.findByEntityCode(voucher.getEntityCode())
-                    .orElseThrow(() -> new EntityNotFoundException("Entity not found"));
+                    .orElseThrow(() -> new EntityReferenceNotFoundException("đối tượng", voucher.getEntityCode()));
 
             Currency currency = currencyRepository.findById(voucher.getCurrencyId())
-                    .orElseThrow(() -> new EntityNotFoundException("Currency not found"));
+                    .orElseThrow(() -> new EntityReferenceNotFoundException("loại tiền", voucher.getCurrencyId().toString()));
 
             VoucherResponseDTO response = mapToResponseDTO(voucher, entity, currency);
 
@@ -167,6 +181,7 @@ public class VoucherService {
                 detailDTO.setAccountDebitCode(detail.getAccountDebit().getAccountCode());
                 detailDTO.setAccountCreditCode(detail.getAccountCredit().getAccountCode());
                 detailDTO.setAmount(detail.getAmount());
+                detailDTO.setId(detail.getId());
                 return detailDTO;
             }).collect(Collectors.toList());
 

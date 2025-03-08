@@ -8,6 +8,7 @@ import com.vacom.accounting_system.repository.AccountRepository;
 import com.vacom.accounting_system.repository.VoucherDetailRepository;
 import com.vacom.accounting_system.repository.VoucherRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -21,95 +22,99 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AccountLedgerService {
 
     private final AccountRepository accountRepository;
     private final VoucherRepository voucherRepository;
     private final VoucherDetailRepository voucherDetailRepository;
 
-    // Read: Lấy báo cáo sổ chi tiết tài khoản với lọc, phân trang, và sắp xếp cho nhiều accountCodes
     public Page<AccountLedgerReportDTO> getAccountLedgerReport(List<String> accountCodes, Date startDate, Date endDate,
                                                                String voucherNumberContains, String descriptionContains,
                                                                List<String> oppositeAccounts, Pageable pageable) {
-        // Kiểm tra và validate accountCodes
         if (accountCodes == null || accountCodes.isEmpty()) {
-            throw new IllegalArgumentException("At least one account code is required");
+            return new PageImpl<>(new ArrayList<>(), pageable, 0);
         }
 
-        // Kiểm tra các accountCodes có hợp lệ không
         List<String> validAccountCodes = accountRepository.findAllByAccountCodeIn(accountCodes)
                 .stream()
                 .map(Account::getAccountCode)
-                .collect(Collectors.toList());
+                .toList();
+
         if (validAccountCodes.size() < accountCodes.size()) {
-            throw new IllegalArgumentException("Some account codes are invalid: " + accountCodes);
+            throw new IllegalArgumentException("Một số mã tài khoản không hợp lệ: " + accountCodes);
+        }
+
+        List<Voucher> allVouchers;
+        if (startDate != null && endDate != null) {
+            allVouchers = voucherRepository.findByVoucherDateBetween(startDate, endDate);
+        } else {
+            allVouchers = voucherRepository.findAll();
         }
 
         List<AccountLedgerReportDTO> report = new ArrayList<>();
         Double debitBalance = 0.0;
         Double creditBalance = 0.0;
 
-        // Xử lý từng accountCode trong danh sách
-        for (String accountCode : accountCodes) {
-            Page<Voucher> voucherPage = voucherRepository.findByVoucherDateBetween(startDate, endDate, pageable);
+        for (Voucher voucher : allVouchers) {
+            if (voucherNumberContains != null && !voucher.getVoucherNumber().toLowerCase().contains(voucherNumberContains.toLowerCase())) {
+                continue;
+            }
 
-            for (Voucher voucher : voucherPage) {
-                // Lọc theo số chứng từ (voucher_number) nếu có
-                if (voucherNumberContains != null && !voucher.getVoucherNumber().toLowerCase().contains(voucherNumberContains.toLowerCase())) {
+            List<VoucherDetail> allDetails = voucherDetailRepository.findByVoucherId(voucher.getId());
+
+            for (VoucherDetail detail : allDetails) {
+                String debitAccount = detail.getAccountDebit().getAccountCode();
+                String creditAccount = detail.getAccountCredit().getAccountCode();
+
+                boolean isRelevant = accountCodes.contains(debitAccount) || accountCodes.contains(creditAccount);
+                if (!isRelevant) continue;
+
+                String mainAccount = accountCodes.contains(debitAccount) ? debitAccount : creditAccount;
+                String oppositeAccount = mainAccount.equals(debitAccount) ? creditAccount : debitAccount;
+
+                if (oppositeAccounts != null && !oppositeAccounts.isEmpty() && !oppositeAccounts.contains(oppositeAccount)) {
                     continue;
                 }
 
-                List<VoucherDetail> details = voucherDetailRepository.findByVoucherIdAndFilters(
-                        voucher.getId(), descriptionContains, oppositeAccounts);
-
-                for (VoucherDetail detail : details) {
-                    boolean isDebit = detail.getAccountDebit().getAccountCode().equals(accountCode);
-                    boolean isCredit = detail.getAccountCredit().getAccountCode().equals(accountCode);
-
-                    if (isDebit || isCredit) {
-                        String description = detail.getDescription() != null ? detail.getDescription() : voucher.getDescription();
-                        String oppositeAccount = isDebit ? detail.getAccountCredit().getAccountCode() : detail.getAccountDebit().getAccountCode();
-
-                        // Lọc theo diễn giải nếu có
-                        if (descriptionContains != null && !description.toLowerCase().contains(descriptionContains.toLowerCase())) {
-                            continue;
-                        }
-
-                        // Lọc theo tài khoản đối ứng nếu có
-                        if (oppositeAccounts != null && !oppositeAccounts.isEmpty() && !oppositeAccounts.contains(oppositeAccount)) {
-                            continue;
-                        }
-
-                        AccountLedgerReportDTO dto = new AccountLedgerReportDTO();
-                        dto.setDate(voucher.getVoucherDate());
-                        dto.setVoucherNumber(voucher.getVoucherNumber());
-                        dto.setDescription(description);
-                        dto.setOppositeAccount(oppositeAccount);
-
-                        if (isDebit) {
-                            dto.setDebitAmount(detail.getAmount());
-                            dto.setCreditAmount(0.0);
-                            debitBalance += detail.getAmount();
-                        } else {
-                            dto.setDebitAmount(0.0);
-                            dto.setCreditAmount(detail.getAmount());
-                            creditBalance += detail.getAmount();
-                        }
-
-                        dto.setDebitBalance(debitBalance);
-                        dto.setCreditBalance(creditBalance);
-
-                        report.add(dto);
-                    }
+                String description = detail.getDescription() != null ? detail.getDescription() : voucher.getDescription();
+                if (descriptionContains != null && !description.toLowerCase().contains(descriptionContains.toLowerCase())) {
+                    continue;
                 }
+
+                AccountLedgerReportDTO dto = new AccountLedgerReportDTO();
+                dto.setDate(voucher.getVoucherDate());
+                dto.setVoucherNumber(voucher.getVoucherNumber());
+                dto.setDescription(description);
+                dto.setOppositeAccount(oppositeAccount);
+
+                boolean isDebit = accountCodes.contains(debitAccount);
+                if (isDebit) {
+                    dto.setDebitAmount(detail.getAmount());
+                    dto.setCreditAmount(0.0);
+                    debitBalance += detail.getAmount();
+                } else {
+                    dto.setDebitAmount(0.0);
+                    dto.setCreditAmount(detail.getAmount());
+                    creditBalance += detail.getAmount();
+                }
+
+                dto.setDebitBalance(debitBalance);
+                dto.setCreditBalance(creditBalance);
+
+                report.add(dto);
             }
         }
 
-        // Tạo Page từ danh sách đã lọc
+        // Phân trang kết quả đã lọc
         int start = (int) pageable.getOffset();
         int end = Math.min((start + pageable.getPageSize()), report.size());
-        List<AccountLedgerReportDTO> pageContent = report.subList(start, end);
 
+        if (start >= report.size()) {
+            return new PageImpl<>(new ArrayList<>(), pageable, report.size());
+        }
+
+        List<AccountLedgerReportDTO> pageContent = report.subList(start, end);
         return new PageImpl<>(pageContent, pageable, report.size());
     }
 
@@ -125,5 +130,11 @@ public class AccountLedgerService {
 
     public void deleteVoucherDetail(Integer id) {
         voucherDetailRepository.deleteById(id);
+    }
+
+    public List<String> getAllAccountCodes() {
+        return accountRepository.findAll().stream()
+                .map(Account::getAccountCode)
+                .collect(Collectors.toList());
     }
 }
