@@ -1,39 +1,54 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from "react";
-import { Button, Container, Row, Col, Table, Alert } from "react-bootstrap";
+import { Button, Container, Row, Col, Table, Alert, Modal } from "react-bootstrap";
 import { FaSyncAlt } from "react-icons/fa";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import axiosClient from "../libs/axios-client";
 import PropTypes from "prop-types";
+import TemplateAccountDetailReport from "./TemplateAccountDetailReport";
+import Select from 'react-select';
 
 const ReportPage = (initialData) => {
-    const [formData, setFormData] = useState(
-      initialData || { date: "", voucherNumber: "",
-        description: "", oppositeAccount: "",
-        debitAmount: "", creditAmount: "",
-        debitBalance: "", creditBalance: "",
-                       }
-    );  const [error, setError] = useState("");
+  const [formData, setFormData] = useState(
+    initialData || { date: "", voucherNumber: "",
+      description: "", oppositeAccount: "",
+      debitAmount: "", creditAmount: "",
+      debitBalance: "", creditBalance: "",
+                      }
+  );  
+  const [error, setError] = useState("");
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
-  const [filterText, setFilterText] = useState("Hiển thị tất cả dữ liệu");
+  const [accountCodes, setAccountCodes] = useState([]);
+  const [filterText, setFilterText] = useState("");
+  const [show, setShow] = useState(false);
+  const [accounts, setAccounts] = useState([]);
+  const [showModalSelectAccount, setShowModalSelectAccount] = useState(false);
 
   useEffect(() => {
     fetchData();
   }, []);
 
-  const fetchData = async (start = null, end = null) => {
-    try {
-      let url = "/reports/account-ledger";
-      if (start && end) {
-        url += `?startDate=${start.toISOString().split("T")[0]}&endDate=${end.toISOString().split("T")[0]}`;
-      }
-      
-      const res = await axiosClient.get(url);
-      console.log("Dữ liệu API:", res.data);
+  const fetchData = async () => {
+    if(!startDate || !endDate || accountCodes.length == 0) {
+      setError("Vui lòng chọn đầy đủ thông tin để lọc.");
+      return;
+    }
+    setError("");
 
-      if (res.data && res.data.content) {
-        setFormData(res.data.content);
+    try {
+      
+      const res = await axiosClient.get('/reports/account-ledger', {
+        params: {
+          startDate: startDate.toISOString().split("T")[0],
+          endDate: endDate.toISOString().split("T")[0],
+          accountCodes: accountCodes.map((item) => item.value).join(","),
+        },
+      });
+
+      if (res.data && res.data.data) {
+        setFormData(res.data.data);
       } else {
         setFormData([]);
       }
@@ -51,14 +66,41 @@ const ReportPage = (initialData) => {
       return;
     }
 
+    if (accountCodes.length == 0) {
+      setError("Vui lòng chọn tài khoản cần lọc.");
+      return;
+    }
+
     if (startDate > endDate) {
       setError("Ngày kết thúc phải lớn hơn hoặc bằng ngày bắt đầu.");
       return;
     }
 
-    setFilterText(`Lọc từ ${startDate.toLocaleDateString()} đến ${endDate.toLocaleDateString()}`);
+    setFilterText(`Lọc từ ${startDate.toLocaleDateString()} đến ${endDate.toLocaleDateString()} theo tài khoản ${accountCodes.map((item) => item.value).join(", ")}`);
     fetchData(startDate, endDate);
   };
+
+  const handleExport = () => {
+    setShow(true);
+
+    // setTimeout(() => {
+    //   const printButton = document.querySelector('#print');
+    //   if (printButton) {
+    //     printButton.click();
+    //   }
+    // }, 100);
+  };
+
+  const handleSelectAccount = async () => {
+    if(accounts.length == 0){
+      await axiosClient.get('/master-data/accounts')
+      .then(res => {
+        setAccounts(res.data);
+      });
+    }
+
+    setShowModalSelectAccount(true);
+  }
 
   return (
     <Container fluid className="p-3">
@@ -69,7 +111,8 @@ const ReportPage = (initialData) => {
         </Col>
         <Col xs="auto" className="d-flex gap-2">
           <Button variant="success" size="sm">Xuất</Button>
-          <Button variant="info" size="sm">In</Button>
+          <Button variant="info" size="sm" onClick={handleExport}>In</Button>
+          {show && <TemplateAccountDetailReport data={formData} setShow={setShow} startDate={startDate} endDate={endDate} accountCodes={accountCodes} />}
           <Button variant="warning" size="sm" onClick={() => window.location.reload()}>
             <FaSyncAlt />
           </Button>
@@ -98,6 +141,13 @@ const ReportPage = (initialData) => {
             placeholderText="Chọn ngày kết thúc"
             popperPlacement="bottom-start"
           />
+        </Col>
+
+        <Col xs="auto">
+          <Alert variant="info" className="m-0" onClick={handleSelectAccount} style={{ cursor: "pointer" }}>
+            {accountCodes.map((item) => item.value).join(", ")}
+            {accountCodes.length == 0 && "Chọn tài khoản"}
+          </Alert>
         </Col>
 
         <Col xs="auto">
@@ -158,6 +208,25 @@ const ReportPage = (initialData) => {
           )}
         </tbody>
       </Table>
+
+      <Modal centered show={showModalSelectAccount} onHide={() => setShowModalSelectAccount(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Chọn tài khoản</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Select
+            options={accounts.map((item) => ({ value: item.accountCode, label: `${item.accountName}` }))}
+            onChange={(selected) => setAccountCodes(selected)}
+            isMulti
+            value={accountCodes}
+            placeholder="Chọn tài khoản"
+          />
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowModalSelectAccount(false)}>Đóng</Button>
+          <Button variant="primary" onClick={() => setShowModalSelectAccount(false)}>Chọn</Button>
+        </Modal.Footer>        
+      </Modal>
     </Container>
   );
 };

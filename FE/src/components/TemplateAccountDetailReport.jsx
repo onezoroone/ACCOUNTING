@@ -2,11 +2,11 @@ import PropTypes from "prop-types";
 import { useRef } from "react";
 import { useReactToPrint } from "react-to-print";
 
-function TemplateTrialBalanceReport({data, setShow, startDate, endDate}) {
+function TemplateAccountDetailReport({ data, setShow, startDate, endDate, accountCodes }) {
     const contentRef = useRef({});
     const reactToPrintFn = useReactToPrint({
         contentRef: contentRef,
-        documentTitle: 'BÁO CÁO SỔ CÂN ĐỐI PHÁT SINH',
+        documentTitle: 'BÁO CÁO CHI TIẾT TÀI KHOẢN',
         pageStyle: `
             @page {
                 size: landscape;
@@ -39,6 +39,10 @@ function TemplateTrialBalanceReport({data, setShow, startDate, endDate}) {
             setShow(false);
         }
     });
+
+    const formatAmount = (amount) => {
+        return new Intl.NumberFormat('vi-VN').format(amount);
+    }
     
     return (  
         <div className="d-none">
@@ -52,64 +56,71 @@ function TemplateTrialBalanceReport({data, setShow, startDate, endDate}) {
                                 <i className="small">Số 100 HN, phố Tân Lập, Phường Phúc Xá, Quận Ba Đình, Hà Nội</i>
                             </div>
                             <div className="col-4 text-center">
-                                <p className="fw-bold mb-1">Mẫu số S06 - DN</p>
+                                <p className="fw-bold mb-1">Mẫu số S38 - DN</p>
                                 <i className="small">(Ban hành theo thông tư 133/2016/TT-BTC ngày 26/08/2016 của Bộ Tài chính)</i>
                             </div>
                         </div>
-                        <div className="text-center mb-1" >
-                            <h4 className="fw-bold mb-1">BẢNG CÂN ĐỐI SỔ PHÁT SINH</h4>
-                            <p className="mb-0">Từ ngày {startDate} đến ngày {endDate}</p>
+                        <div className="text-center mb-2" >
+                            <h2 className="fw-bold mb-1">SỔ CHI TIẾT TÀI KHOẢN</h2>
+                            <p className="mb-0 fw-bold">Từ ngày {startDate.toLocaleDateString('vi-VN')} đến ngày {endDate.toLocaleDateString('vi-VN')}</p>
+                            <p className="mb-0 fw-bold small">
+                                {accountCodes.length && `Tài khoản: ${accountCodes.map((item) => item.value).join(", ")} - ${accountCodes.map((item) => item.label).join(", ")}` }
+                            </p>
                         </div>
                         <div className="text-end">
-                            <p>Đơn vị tính: VND</p>
+                            <p className="mb-0">Đơn vị tính: VND</p>
                         </div>
                         <table className="table table-bordered text-center">
                             <thead>
                                 <tr>
-                                    <th rowSpan="2" className="align-middle">Số hiệu TK</th>
-                                    <th rowSpan="2" className="align-middle">Tên tài khoản</th>
-                                    <th colSpan="2">Số dư đầu kỳ</th>
-                                    <th colSpan="2">Phát sinh trong kỳ</th>
-                                    <th colSpan="2">Số dư cuối kỳ</th>
+                                    <th colSpan="2">Chứng từ</th>
+                                    <th rowSpan="2" className="align-middle">Lý do</th>
+                                    <th rowSpan="2" className="align-middle">TK đối ứng</th>
+                                    <th colSpan="2">Số phát sinh trong kỳ</th>
+                                    <th colSpan="2">Số dư</th>
                                 </tr>
                                 <tr>
+                                    <th>Ngày</th>
+                                    <th>Số hiệu</th>
                                     <th>Nợ</th>
                                     <th>Có</th>
-                                    <th>Nợ</th>
-                                    <th>Có</th>
-                                    <th>Nợ</th>
-                                    <th>Có</th>
+                                    <th>Dư Nợ</th>
+                                    <th>Dư Có</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>1</td>
-                                    <td>2</td>
-                                    <td>3</td>
-                                    <td>4</td>
-                                    <td>5</td>
-                                    <td>6</td>
-                                    <td>7</td>
-                                    <td>8</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td className="fw-bold">Số dư đầu kỳ</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
                                 </tr>
                                 {data.map((item, index) => (
-                                    <tr key={index} className={item.parentId ? '' : 'fw-bold'}>
-                                        <td>{item.accountCode}</td>
-                                        <td>{item.accountName}</td>
-                                        <td>{item.debitOpening}</td>
-                                        <td>{item.creditOpening}</td>
-                                        <td>{item.debitTransaction}</td>
-                                        <td>{item.creditTransaction}</td>
-                                        <td>{item.debitClosing}</td>
-                                        <td>{item.creditClosing}</td>
+                                    <tr key={index}>
+                                        <td>{new Date(item.date).toLocaleDateString('vi-VN')}</td>
+                                        <td>{item.voucherNumber}</td>
+                                        <td>{item.description}</td>
+                                        <td>{item.oppositeAccount}</td>
+                                        <td>{formatAmount(item.debitAmount)}</td>
+                                        <td>{formatAmount(item.creditAmount)}</td>
+                                        <td>{formatAmount(item.debitBalance)}</td>
+                                        <td>{formatAmount(item.creditBalance)}</td>
                                     </tr>
                                 ))}
                             </tbody>
                         </table>
+                        <div>
+                            <p className="mb-0">Sổ này có {Math.ceil(data.length / 20)} trang, đánh số từ trang 1 đến trang {Math.ceil(data.length / 20)}</p>
+                            <p>Ngày mở sổ: {new Date().toLocaleDateString('vi-VN')}</p>
+                        </div>
                         <div className="row mb-3 mt-4">
                             <div className="col-8"></div>
                             <div className="col-4 text-center">
-                                <p className="mb-0">Ngày {new Date().getDate()} tháng {new Date().getMonth() + 1} năm {new Date().getFullYear()}</p>
+                                <p className="mb-0">Ngày ......... tháng ......... năm ..........</p>
                             </div>
                         </div>
                         <div className="row">
@@ -133,7 +144,7 @@ function TemplateTrialBalanceReport({data, setShow, startDate, endDate}) {
     );
 }
 
-TemplateTrialBalanceReport.propTypes = {
+TemplateAccountDetailReport.propTypes = {
   setShow: PropTypes.func,
   data: PropTypes.arrayOf(PropTypes.shape({
     accountCode: PropTypes.string,
@@ -144,9 +155,11 @@ TemplateTrialBalanceReport.propTypes = {
     creditTransaction: PropTypes.string,    
     debitClosing: PropTypes.string,
     creditClosing: PropTypes.string,
+    date: PropTypes.string,
   })),
   startDate: PropTypes.string,
   endDate: PropTypes.string,
+  accountCodes: PropTypes.array,
 };
 
-export default TemplateTrialBalanceReport;
+export default TemplateAccountDetailReport;
