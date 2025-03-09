@@ -16,4 +16,6 @@ public class VoucherDetailDTO {
     @NotNull(message = "Amount is required")
     @Positive(message = "Amount must be positive")
     private Double amount;
+
+    private String description;
 }
