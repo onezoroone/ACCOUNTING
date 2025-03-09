@@ -2,7 +2,7 @@ import PropTypes from "prop-types";
 import { useRef } from "react";
 import { useReactToPrint } from "react-to-print";
 
-function TemplateTrialBalanceReport({data, setShow, startDate, endDate}) {
+function TemplateAccountDetailReport({data, setShow}) {
     const contentRef = useRef({});
     const reactToPrintFn = useReactToPrint({
         contentRef: contentRef,
@@ -57,8 +57,8 @@ function TemplateTrialBalanceReport({data, setShow, startDate, endDate}) {
                             </div>
                         </div>
                         <div className="text-center mb-1" >
-                            <h4 className="fw-bold mb-1">BẢNG CÂN ĐỐI SỔ PHÁT SINH</h4>
-                            <p className="mb-0">Từ ngày {startDate} đến ngày {endDate}</p>
+                            <h4 className="fw-bold mb-1">Sổ chi tiết tài khoản</h4>
+                            <p className="mb-0">Từ ngày 01/01/2021 đến ngày 31/01/2021</p>
                         </div>
                         <div className="text-end">
                             <p>Đơn vị tính: VND</p>
@@ -66,15 +66,14 @@ function TemplateTrialBalanceReport({data, setShow, startDate, endDate}) {
                         <table className="table table-bordered text-center">
                             <thead>
                                 <tr>
-                                    <th rowSpan="2" className="align-middle">Số hiệu TK</th>
-                                    <th rowSpan="2" className="align-middle">Tên tài khoản</th>
-                                    <th colSpan="2">Số dư đầu kỳ</th>
-                                    <th colSpan="2">Phát sinh trong kỳ</th>
-                                    <th colSpan="2">Số dư cuối kỳ</th>
+                                    <th rowSpan="2" className="align-middle">Ngày chứng từ</th>
+                                    <th rowSpan="2" className="align-middle">Mã chứng từ</th>
+                                    <th rowSpan="2" className="align-middle">Mô tả</th>
+                                    <th rowSpan="2" className="align-middle">Tài khoản đối ứng</th>
+                                    <th colSpan="2">Số dư</th>
+                                    <th colSpan="2">Tổng</th>
                                 </tr>
                                 <tr>
-                                    <th>Nợ</th>
-                                    <th>Có</th>
                                     <th>Nợ</th>
                                     <th>Có</th>
                                     <th>Nợ</th>
@@ -94,14 +93,14 @@ function TemplateTrialBalanceReport({data, setShow, startDate, endDate}) {
                                 </tr>
                                 {data.map((item, index) => (
                                     <tr key={index} className={item.parentId ? '' : 'fw-bold'}>
-                                        <td>{item.accountCode}</td>
-                                        <td>{item.accountName}</td>
-                                        <td>{item.debitOpening}</td>
-                                        <td>{item.creditOpening}</td>
-                                        <td>{item.debitTransaction}</td>
-                                        <td>{item.creditTransaction}</td>
-                                        <td>{item.debitClosing}</td>
-                                        <td>{item.creditClosing}</td>
+                                        <td>{item.date ? new Date(item.date).toLocaleDateString('vi-VN'): ''}</td>
+                                        <td>{item.voucherNumber}</td>
+                                        <td>{item.description}</td>
+                                        <td>{item.oppositeAccount}</td>
+                                        <td>{item.debitAmount}</td>
+                                        <td>{item.creditAmount}</td>
+                                        <td>{item.debitBalance}</td>
+                                        <td>{item.creditBalance}</td>
                                     </tr>
                                 ))}
                             </tbody>
@@ -133,20 +132,18 @@ function TemplateTrialBalanceReport({data, setShow, startDate, endDate}) {
     );
 }
 
-TemplateTrialBalanceReport.propTypes = {
+TemplateAccountDetailReport.propTypes = {
   setShow: PropTypes.func,
   data: PropTypes.arrayOf(PropTypes.shape({
-    accountCode: PropTypes.string,
-    accountName: PropTypes.string,
-    debitOpening: PropTypes.string,
-    creditOpening: PropTypes.string,
-    debitTransaction: PropTypes.string,
-    creditTransaction: PropTypes.string,    
-    debitClosing: PropTypes.string,
-    creditClosing: PropTypes.string,
-  })),
-  startDate: PropTypes.string,
-  endDate: PropTypes.string,
+    date: PropTypes.string,
+    voucherNumber: PropTypes.string,
+    description: PropTypes.string,
+    oppositeAccount: PropTypes.string,
+    debitAmount: PropTypes.string,
+    creditAmount: PropTypes.string,    
+    debitBalance: PropTypes.string,
+    creditBalance: PropTypes.string,
+  }))
 };
 
-export default TemplateTrialBalanceReport;
+export default TemplateAccountDetailReport;

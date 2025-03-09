@@ -22,6 +22,7 @@ function VouchersPage() {
                     page: currentPagination,
                 }
             }).then((res) => {
+              console.log(res.data);
                 setData(res.data.content);
                 setTotalPagination(res.data.totalPages);
             });
@@ -34,9 +35,25 @@ function VouchersPage() {
         return dateObj.toLocaleDateString() + " " + dateObj.toLocaleTimeString();
     }
 
-    const formartCurrency = (currency) => {
-        return currency.toLocaleString('vi-VN', {style : 'currency', currency : 'VND'});
+    const formartCurrency = (voucher) => {
+        // return voucher.totalAmount.toLocaleString('vi-VN', {style : 'currency', currency : voucher.currentCode});
+        const currentCode = voucher.currentCode;
+        const totalAmount = voucher.totalAmount;
+
+        if (currentCode === 'VND') {
+          return totalAmount.toLocaleString('vi-VN', {style : 'currency', currency : 'VND'});
+        } else if (currentCode === 'EUR') {
+          return totalAmount.toLocaleString('de-DE', {style : 'currency', currency : 'EUR'});
+        } else if (currentCode === 'USD') {
+          return totalAmount.toLocaleString('en-US', {style : 'currency', currency : 'USD'});
+        } else {
+          return totalAmount.toLocaleString('vi-VN', {style : 'currency', currency : 'VND'});
+        }
     }
+
+    const formartCurrency1 = (currency) => {
+      return currency.toLocaleString('vi-VN', {style : 'currency', currency : 'VND'});
+  }
 
     const handleDeleteVoucher = async (id) => {
       MySwal.fire({
@@ -152,7 +169,7 @@ function VouchersPage() {
                   <td>{voucher.voucherNumber}</td>
                   <td>{voucher.entityCode}</td>
                   <td>{voucher.entityName}</td>
-                  <td>{formartCurrency(voucher.totalAmount)}</td>
+                  <td>{formartCurrency(voucher)}</td>
                   <td>{voucher.currentCode}</td>
                   <td>{voucher.createBy}</td>
                   <td>
@@ -193,17 +210,11 @@ function VouchersPage() {
                     <td>{detail.accountCreditCode}</td>
                     <td>{currentVoucher.entityCode}</td>
                     <td>{currentVoucher.entityName}</td>
-                    <td>{formartCurrency(detail.amount)}</td>
+                    <td>{formartCurrency1(detail.amount)}</td>
                 </tr> 
               ))}
             </tbody>
           </table>
-    
-          {/* Nút Lọc và In */}
-          <div className="d-flex justify-content-end">
-            <button className="btn btn-secondary mx-1">Lọc</button>
-            <button className="btn btn-secondary">In</button>
-          </div>
         </div>
       );
 }

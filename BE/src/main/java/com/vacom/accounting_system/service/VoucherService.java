@@ -155,6 +155,7 @@ public class VoucherService {
         response.setVoucherNumber(voucher.getVoucherNumber());
         response.setEntityCode(voucher.getEntityCode());
         response.setEntityName(entity.getEntityName());
+        response.setAddress(entity.getAddress());
         response.setVoucherDate(voucher.getVoucherDate());
         response.setCurrentCode(currency.getCurrencyCode());
         response.setTotalAmount(voucher.getTotalAmount());

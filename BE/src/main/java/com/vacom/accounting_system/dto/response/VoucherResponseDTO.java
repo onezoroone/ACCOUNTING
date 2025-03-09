@@ -13,6 +13,7 @@ public class VoucherResponseDTO {
     private String voucherType;
     private String entityCode;
     private String entityName;
+    private String address;
     private String createBy;
     private String currentCode;
     private Double totalAmount;

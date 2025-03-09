@@ -7,7 +7,6 @@ function TemplateVoucher({voucher, setShowVoucher}) {
     const contentRef = useRef({});
     const reactToPrintFn = useReactToPrint({
         contentRef: contentRef,
-        documentTitle: 'Phiếu thu',
         pageStyle: `
             @page {
                 size: landscape;
@@ -150,7 +149,7 @@ function TemplateVoucher({voucher, setShowVoucher}) {
                         </div>
 
                         <div className="text-center position-absolute start-50 translate-middle" style={{top: `${voucher.details.length * 50 + 110}px`}}>
-                            <h4 className="fw-bold mb-0">PHIẾU THU</h4>
+                            <h4 className="fw-bold mb-0">{voucher.voucherType == "PHIEU_THU" ? 'PHIẾU THU' : 'PHIẾU CHI'}</h4>
                             <p className="mb-0">{convertDate(voucher.voucherDate)}</p>
                             <p className="fw-bold">Số hiệu: {voucher.voucherNumber}</p>
                         </div>
@@ -170,7 +169,7 @@ function TemplateVoucher({voucher, setShowVoucher}) {
                                 <div style={{ flexShrink: 0 }}>Địa chỉ:</div>
                                 <span className="ms-3"></span>
                                 <p className="mb-0 pb-0" style={{ overflowWrap: 'break-word', flex: '1' }}>
-                                    Số 139U Phố Nguyễn Thái Học - Phường Điện Biên - Quận Ba Đình - Thành phố Hà Nội - Việt Nam
+                                    {voucher.address}
                                 </p>
                             </div>
 
@@ -237,6 +236,8 @@ TemplateVoucher.propTypes = {
     voucherDate: PropTypes.string,
     voucherNumber: PropTypes.string,
     totalAmount: PropTypes.number,
+    voucherType: PropTypes.string,
+    address: PropTypes.string,
     details: PropTypes.arrayOf(PropTypes.shape({
         accountCreditCode: PropTypes.string,
         accountDebitCode: PropTypes.string,
