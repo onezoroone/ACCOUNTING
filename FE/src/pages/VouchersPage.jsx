@@ -22,7 +22,6 @@ function VouchersPage() {
                     page: currentPagination,
                 }
             }).then((res) => {
-              console.log(res.data);
                 setData(res.data.content);
                 setTotalPagination(res.data.totalPages);
             });
@@ -173,7 +172,7 @@ function VouchersPage() {
                   <td>{voucher.currentCode}</td>
                   <td>{voucher.createBy}</td>
                   <td>
-                    <button className="btn btn-sm btn-outline-primary mx-1" onClick={() => handleEditVoucher(voucher)}>✏️</button>
+                    {/* <button className="btn btn-sm btn-outline-primary mx-1" onClick={() => handleEditVoucher(voucher)}>✏️</button> */}
                     <button className="btn btn-sm btn-outline-danger" onClick={() => handleDeleteVoucher(voucher.id)}>🗑️</button>
                   </td>
                 </tr>

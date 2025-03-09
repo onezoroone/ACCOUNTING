@@ -3,9 +3,12 @@ import { Table, Button, Form, Modal } from "react-bootstrap";
 import { Link, useLocation } from "react-router-dom";
 import Select from 'react-select';
 import axiosClient from "../libs/axios-client";
+import PropTypes from "prop-types";
 
 const ReceiptVoucher = () => {
   const location = useLocation();
+  const type = location.pathname == "/receipt" ? "PHIEU_THU" : "PHIEU_CHI";
+  const title = location.pathname == "/receipt" ? "Phiếu thu" : "Phiếu chi";
   const data = location.state ? location.state.data : {
     "entityCode": "",
     "entityName": "",
@@ -14,33 +17,36 @@ const ReceiptVoucher = () => {
     "voucherNumber": "",
     "description": "",
     "currencyCode": "",
+    "currentCode": "VND",
     "exchangeRate": 1,
     "totalAmount": 0,
     "totalAmountOrigin": 0,
+    "voucher_type": type,
     "details": []
   };
+  
   const [voucher, setVoucher] = useState(data);
   const [entities, setEntities] = useState([]);
   const [selectedEntity, setSelectedEntity] = useState(null);
   const [currencies, setCurrencies] = useState([]);
   const [currencyModalOpen, setCurrencyModalOpen] = useState(false);
-  const [selectedCurrency, setSelectedCurrency] = useState(null);
+  const [selectedCurrency, setSelectedCurrency] = useState({
+    value: data.currentCode,
+    label: "VND",
+    exchangeRate: data.exchangeRate
+  });
   
-  const [entries, setEntries] = useState([
-    { account_debit: "", account_credit: "", amount: "", entity_code: "", entity_name: "", description: "" }
-  ]);
 
   const addRow = () => {
-    setEntries([...entries, { account_debit: "", account_credit: "", amount: "", entity_code: "", entity_name: "", description: "" }]);
-    setVoucher({ ...voucher, details: entries });
+    setVoucher({ ...voucher, details: [...voucher.details, { accountDebitCode: "", accountCreditCode: "", amount: "", entityCode: "", entityName: "", description: ""}] });
   };
 
   const deleteRow = (index) => {
-    setEntries(entries.filter((_, i) => i !== index));
+    setVoucher({ ...voucher, details: voucher.details.filter((_, i) => i !== index) });
   };
 
   const clearAll = () => {
-    setEntries([]);
+    setVoucher({ ...voucher, details: [] });
   };
 
   const [isPartnersModalOpen, setPartnersModalOpen] = useState(false);
@@ -75,20 +81,44 @@ const ReceiptVoucher = () => {
       });
     }
 
-    console.log(selectedCurrency);
-
     setCurrencyModalOpen(true);
+  }
+
+  const handleSubmit = async () => {
+    voucher.currencyCode = selectedCurrency.value;
+    voucher.exchangeRate = selectedCurrency.exchangeRate;
+    voucher.totalAmount = voucher.details.reduce((acc, cur) => acc + Number(cur.amount), 0);
+    voucher.totalAmountOrigin = voucher.totalAmount * voucher.exchangeRate;
+    voucher.address = selectedEntity.address;
+    voucher.entityCode = selectedEntity.value;
+    voucher.entityName = selectedEntity.label;
+    if(!location.state){
+      await axiosClient.post('/vouchers', voucher)
+      .then(() => {
+        alert("Thêm thành công");
+      }).catch((err) => {
+        console.error(err);
+      });
+    }else{
+      await axiosClient.put(`/vouchers/${voucher.id}`, voucher)
+      .then(() => {
+        // console.log(res);
+        alert("Sửa thành công");
+      }).catch((err) => {
+        console.error(err);
+      });
+    }
   }
 
   return (
     <div className="container-fluid mt-4">
-      <h4 className="text-center">PHIẾU THU</h4>
+      <h4 className="text-center">{title}</h4>
       
       <div className="row bg-light p-3 rounded">
         <div className="col-md-4">
           <label>Mã đối tượng</label>
           <div className="input-group mb-3">
-            <input type="text" name="entity_code" className="form-control" value={voucher.entityCode} />
+            <input type="text" name="entity_code" className="form-control" value={selectedEntity ? selectedEntity.value : voucher.entityCode} />
             <button onClick={handleGetEntities} className="btn btn-outline-secondary" type="button">+</button>
           </div>
           <Modal centered show={isPartnersModalOpen} onHide={() => setPartnersModalOpen(false)}>
@@ -97,7 +127,7 @@ const ReceiptVoucher = () => {
             </Modal.Header>
             <Modal.Body>
               <Select
-                options={entities.map((item) => ({ value: item.entityCode, label: `${item.entityName}` }))}
+                options={entities.map((item) => ({ value: item.entityCode, label: `${item.entityName}`, address: item.address }))}
                 onChange={(selected) => setSelectedEntity(selected)}
                 value={selectedEntity}
                 placeholder="Chọn đối tượng"
@@ -110,11 +140,11 @@ const ReceiptVoucher = () => {
         </div>
         <div className="col-md-4">
           <label>Tên đối tượng</label>
-          <Form.Control type="text" name="entity_name" value={voucher.entityName} onChange={handleChangeVoucher} />
+          <Form.Control type="text" readOnly name="entity_name" value={selectedEntity ? selectedEntity.label : voucher.entityName} onChange={handleChangeVoucher} />
         </div>
         <div className="col-md-4">
           <label>Ngày chứng từ</label>
-          <Form.Control type="date" name="voucher_date" value={voucher.voucherDate} onChange={handleChangeVoucher} />
+          <Form.Control type="date" name="voucherDate" value={voucher.voucherDate} onChange={handleChangeVoucher} />
         </div>
 
         <div className="col-md-4 mt-2">
@@ -123,11 +153,11 @@ const ReceiptVoucher = () => {
         </div>
         <div className="col-md-4 mt-2">
           <label>Địa chỉ</label>
-          <Form.Control type="text" name="address" value={voucher.address} onChange={handleChangeVoucher} />
+          <Form.Control type="text" name="address" readOnly value={selectedEntity ? selectedEntity.address : voucher.address} onChange={handleChangeVoucher} />
         </div>
         <div className="col-md-4 mt-2">
           <label>Số chứng từ</label>
-          <Form.Control type="text" name="voucher_number" value={voucher.voucherNumber} onChange={handleChangeVoucher} />
+          <Form.Control type="text" name="voucherNumber" value={voucher.voucherNumber} onChange={handleChangeVoucher} />
         </div>
 
         <div className="col-md-4 mt-2">
@@ -136,8 +166,8 @@ const ReceiptVoucher = () => {
         </div>
         <div className="col-md-4 mt-2">
           <label>Mã NT</label>
-          <div className="input-group ">
-            <input type="text" name="currency_id" className="form-control" value={voucher.currencyCode} />
+          <div className="input-group">
+            <input type="text" name="currency_id" className="form-control" value={selectedCurrency ? selectedCurrency.value : voucher.currentCode} />
             <button onClick={handleGetCurrency} className="btn btn-outline-secondary" type="button">+</button>
           </div>
         </div>
@@ -149,7 +179,6 @@ const ReceiptVoucher = () => {
             <Select
               options={currencies.map((item) => ({ value: item.currencyCode, label: `${item.currencyName}`, exchangeRate: item.exchangeRate }))}
               onChange={(selected) => setSelectedCurrency(selected)}
-              value={selectedCurrency}
               placeholder="Chọn ngoại tệ"
             />
           </Modal.Body>
@@ -157,13 +186,9 @@ const ReceiptVoucher = () => {
             <Button variant="secondary" onClick={() => setCurrencyModalOpen(false)}>Đóng</Button>
           </Modal.Footer>
         </Modal>
-        <div className="col-md-2 mt-2">
-          <label>VND</label>
-          <Form.Control type="text" value="VND" disabled />
-        </div>
-        <div className="col-md-2 mt-2">
+        <div className="col-md-4 mt-2">
           <label>Tỷ giá</label>
-          <Form.Control type="number" name="exchange_rate" value={voucher.exchangeRate} onChange={handleChangeVoucher} />
+          <Form.Control type="number" name="exchange_rate" value={selectedCurrency ? selectedCurrency.exchangeRate : voucher.exchangeRate} onChange={handleChangeVoucher} />
         </div>
       </div>
 
@@ -175,8 +200,6 @@ const ReceiptVoucher = () => {
             <th>Tài khoản nợ</th>
             <th>Tài khoản có</th>
             <th>Số tiền</th>
-            <th>Đối tượng</th>
-            <th>Tên đối tượng</th>
             <th>Diễn giải chi tiết</th>
             <th></th>
           </tr>
@@ -185,12 +208,10 @@ const ReceiptVoucher = () => {
           {voucher.details.map((entry, index) => (
             <tr key={index}>
               <td>{index + 1}</td>
-              <td><Form.Control type="text" value={entry.accountDebitCode} /></td>
-              <td><Form.Control type="text" value={entry.accountCreditCode} /></td>
-              <td><Form.Control type="number" value={entry.amount} /></td>
-              <td><Form.Control type="text" value={voucher.entityCode} /></td>
-              <td><Form.Control type="text" value={voucher.entityName} /></td>
-              <td><Form.Control type="text" value={entry.description} /></td>
+              <td><Form.Control type="text" value={entry.accountDebitCode} onChange={(e) => setVoucher({ ...voucher, details: voucher.details.map((item, i) => i === index ? { ...item, accountDebitCode: e.target.value } : item) })} /></td>
+              <td><Form.Control type="text" value={entry.accountCreditCode} onChange={(e) => setVoucher({ ...voucher, details: voucher.details.map((item, i) => i === index ? { ...item, accountCreditCode: e.target.value } : item) })} /></td>
+              <td><Form.Control type="number" value={entry.amount} onChange={(e) => setVoucher({ ...voucher, details: voucher.details.map((item, i) => i === index ? { ...item, amount: e.target.value } : item) })} /></td>
+              <td><Form.Control type="text" value={entry.description} onChange={(e) => setVoucher({ ...voucher, details: voucher.details.map((item, i) => i === index ? { ...item, description: e.target.value } : item) })} /></td>
               <td>
                 <button className="btn btn-sm" onClick={() => deleteRow(index)}>🗑️</button>
               </td>
@@ -217,7 +238,7 @@ const ReceiptVoucher = () => {
       </div>
 
       <div className="text-end mt-3">
-        <Button className="bg-success-subtle text-dark border-success-subtle me-2">Lưu</Button>
+        <Button className="bg-success-subtle text-dark border-success-subtle me-2" onClick={handleSubmit}>Lưu</Button>
         {/* <Button className="bg-warning-subtle text-dark me-2 border-warning-subtle">Lưu và In</Button> */}
         <Link to="/vouchers">
           <Button variant="secondary">Đóng</Button>
@@ -227,4 +248,8 @@ const ReceiptVoucher = () => {
   );
 };
 
+ReceiptVoucher.propTypes = {
+  title: PropTypes.string.isRequired,
+  type: PropTypes.string.isRequired,
+};
 export default ReceiptVoucher;
