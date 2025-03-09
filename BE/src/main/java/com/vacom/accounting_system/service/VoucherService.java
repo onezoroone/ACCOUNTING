@@ -134,6 +134,7 @@ public class VoucherService {
             detail.setAccountDebit(debitAccount);
             detail.setAccountCredit(creditAccount);
             detail.setAmount(detailDto.getAmount());
+            detail.setDescription(detailDto.getDescription());
             return detail;
         }).collect(Collectors.toList());
 
