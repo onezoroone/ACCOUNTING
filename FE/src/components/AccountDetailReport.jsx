@@ -9,26 +9,6 @@ import TemplateAccountDetailReport from "./TemplateAccountDetailReport"
 import ExportButton from "./ExcelAccountDetailReport";
 import Select from 'react-select';
 
-
-const sortvoucherNumber = (data) => {
-  const sortedData = [...data];
-  
-  const isParentOf = (parent, child) => {
-    return child.voucherNumber.startsWith(parent.voucherNumber) && 
-           child.voucherNumber.length > parent.voucherNumber.length;
-  };
-  
-  sortedData.sort((a, b) => {
-    if (isParentOf(a, b)) return -1;
-    
-    if (isParentOf(b, a)) return 1;
-    
-    return a.voucherNumber.localeCompare(b.voucherNumber);
-  });
-  
-  return sortedData;
-};
-
 const ReportPage = (initialData) => {
   const [formData, setFormData] = useState([]);
   const [error, setError] = useState("");
@@ -39,15 +19,20 @@ const ReportPage = (initialData) => {
   const [show, setShow] = useState(false);
   const [accounts, setAccounts] = useState([]);
   const [showModalSelectAccount, setShowModalSelectAccount] = useState(false);
+  const [allData, setAllData] = useState([]); // Lưu toàn bộ dữ liệu từ API
+
 
   // Trạng thái phân trang
   const [currentPage, setCurrentPage] = useState(0);
-  const [totalPages, setTotalPages] = useState(1);
-  const pageSize = 20; // Số bản ghi mỗi trang
+  const [totalPages, setTotalPages] = useState();
+  const pageSize = 15; // Số bản ghi mỗi trang
+  const startIndex = currentPage * pageSize;
+const endIndex = startIndex + pageSize;
+const currentData = formData.slice(startIndex, endIndex);
 
   useEffect(() => {
     fetchData(); // Gọi API ngay khi vào trang
-}, [currentPage]); // Chỉ phụ thuộc vào currentPage, không phụ thuộc vào startDate và endDate
+  }, [currentPage]); // Chỉ phụ thuộc vào currentPage
  
   
   const handleExport = () => {
@@ -60,35 +45,34 @@ const ReportPage = (initialData) => {
       }
     }, 100);
   };
-
   const fetchData = async () => {
     try {
-      let url = `/reports/account-ledger?page=${currentPage}&size=${pageSize}`;
-  
-      // Nếu có ngày bắt đầu và ngày kết thúc, thêm vào URL
-      if (startDate && endDate && startDate <= endDate) {
-        url += `&startDate=${startDate.toISOString().split("T")[0]}&endDate=${endDate.toISOString().split("T")[0]}`;
-      }
-  
-      // Nếu có loại tài khoản đối ứng được chọn, thêm vào URL
-      if (accountCodes.length > 0) {
-        const accountFilter = accountCodes.map((item) => item.value).join(",");
-        url += `&counterAccountCodes=${accountFilter}`; // Sử dụng `counterAccountCodes` thay vì `accountCodes`
-      }
-  
+      const url = `/reports/account-ledger?page=${currentPage}&size=${pageSize}`;
       const res = await axiosClient.get(url);
-      let data = res.data?.content || [];
+      console.log("Dữ liệu trả về từ API:", res.data);
   
-      // Sắp xếp dữ liệu theo ngày
-      data.sort((a, b) => new Date(a.date) - new Date(b.date));
+      if (res.data && res.data.data) {
+        setAllData(res.data.data);
+        
+        let filteredData = res.data.data;
+        if (startDate && endDate && startDate <= endDate) {
+          filteredData = res.data.data.filter(item => {
+            const itemDate = new Date(item.date);
+            return itemDate >= startDate && itemDate <= endDate;
+          });
+        }
   
-      setFormData(sortvoucherNumber(data));
-      setTotalPages(res.data.totalPages || 1);
+        setFormData(filteredData);
+        setTotalPages(Math.ceil(filteredData.length / pageSize)); // Cập nhật tổng số trang
+      } else {
+        setError("Không có dữ liệu phù hợp.");
+      }
     } catch (error) {
       console.error("Lỗi khi lấy dữ liệu:", error);
       setError("Không thể lấy dữ liệu. Vui lòng thử lại!");
     }
-  };  
+  };
+  
 
   const handleFilter = () => {
     setError("");
@@ -111,10 +95,15 @@ const ReportPage = (initialData) => {
   
     setFilterText(filterMessage);
   
-    // Đặt lại trang đầu tiên rồi mới fetch dữ liệu với các điều kiện
-    setCurrentPage(0);
-    fetchData();
-  };
+    const filteredData = allData.filter(item => {
+      const itemDate = new Date(item.date);
+      return itemDate >= startDate && itemDate <= endDate;
+    });
+  
+    setFormData(filteredData);
+    setTotalPages(Math.ceil(filteredData.length / pageSize)); // Cập nhật tổng số trang
+    setCurrentPage(0); // Quay về trang đầu tiên sau khi lọc
+  };  
   
   const handleSelectAccount = async () => {
     if(accounts.length == 0){
@@ -207,8 +196,8 @@ const ReportPage = (initialData) => {
           </tr>
         </thead>
         <tbody>
-          {formData.length > 0 ? (
-            formData.map((item, index) => (
+          {currentData.length > 0 ? (
+            currentData.map((item, index) => (
               <tr key={index}>
                 <td>{index + 1 + currentPage * pageSize}</td>
                 <td>{item.date ? new Date(item.date).toLocaleDateString('vi-VN') : ''}</td>
@@ -251,10 +240,11 @@ const ReportPage = (initialData) => {
       <Pagination className="justify-content-center">
         <Pagination.First onClick={() => setCurrentPage(0)} disabled={currentPage === 0} />
         <Pagination.Prev onClick={() => setCurrentPage(prev => Math.max(prev - 1, 0))} disabled={currentPage === 0} />
-        <Pagination.Item>{currentPage + 1} / {totalPages}</Pagination.Item>
+        <Pagination.Item active>{currentPage + 1} / {totalPages}</Pagination.Item>
         <Pagination.Next onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages - 1))} disabled={currentPage === totalPages - 1} />
         <Pagination.Last onClick={() => setCurrentPage(totalPages - 1)} disabled={currentPage === totalPages - 1} />
       </Pagination>
+
     </Container>
   );
 };
