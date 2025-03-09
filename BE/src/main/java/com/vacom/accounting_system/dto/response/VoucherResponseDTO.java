@@ -18,5 +18,8 @@ public class VoucherResponseDTO {
     private String currentCode;
     private Double totalAmount;
     private Double totalAmountOrigin;
+    private Integer currencyId;
+    private Double exchangeRate;
+    private String description;
     private List<VoucherDetailResponseDTO> details;
 }

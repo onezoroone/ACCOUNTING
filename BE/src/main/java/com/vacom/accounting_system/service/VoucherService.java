@@ -161,6 +161,9 @@ public class VoucherService {
         response.setTotalAmount(voucher.getTotalAmount());
         response.setTotalAmountOrigin(voucher.getTotalAmountOrigin());
         response.setVoucherType(voucher.getVoucherType());
+        response.setCurrencyId(currency.getId());
+        response.setExchangeRate(voucher.getExchangeRate());
+        response.setDescription(voucher.getDescription());
         return response;
     }
 
