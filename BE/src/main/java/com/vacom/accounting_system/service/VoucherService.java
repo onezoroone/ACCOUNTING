@@ -134,6 +134,7 @@ public class VoucherService {
             detail.setAccountDebit(debitAccount);
             detail.setAccountCredit(creditAccount);
             detail.setAmount(detailDto.getAmount());
+            detail.setDescription(detailDto.getDescription());
             return detail;
         }).collect(Collectors.toList());
 
@@ -160,6 +161,9 @@ public class VoucherService {
         response.setTotalAmount(voucher.getTotalAmount());
         response.setTotalAmountOrigin(voucher.getTotalAmountOrigin());
         response.setVoucherType(voucher.getVoucherType());
+        response.setCurrencyId(currency.getId());
+        response.setExchangeRate(voucher.getExchangeRate());
+        response.setDescription(voucher.getDescription());
         return response;
     }
 
