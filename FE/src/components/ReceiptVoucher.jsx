@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Table, Button, Form, Modal } from "react-bootstrap";
 import { Link, useLocation } from "react-router-dom";
 import Select from 'react-select';
@@ -9,10 +9,12 @@ const ReceiptVoucher = () => {
   const location = useLocation();
   const type = location.pathname == "/receipt" ? "PHIEU_THU" : "PHIEU_CHI";
   const title = location.pathname == "/receipt" ? "Phiếu thu" : "Phiếu chi";
+  const today = new Date().toLocaleDateString('en-CA');
+
   const data = location.state ? location.state.data : {
     "entityCode": "",
     "entityName": "",
-    "voucherDate": "",
+    "voucherDate": today,
     "address": "",
     "voucherNumber": "",
     "description": "",
@@ -36,6 +38,17 @@ const ReceiptVoucher = () => {
     exchangeRate: data.exchangeRate
   });
   
+  useEffect(() => {
+    const total = voucher.details.reduce((acc, cur) => acc + Number(cur.amount || 0), 0);
+    const totalOrigin = total * (selectedCurrency.exchangeRate || 1);
+
+    setVoucher((prev) => ({
+      ...prev,
+      totalAmount: total,
+      totalAmountOrigin: totalOrigin,
+    }));
+  }, [voucher.details, selectedCurrency]);
+
 
   const addRow = () => {
     setVoucher({ ...voucher, details: [...voucher.details, { accountDebitCode: "", accountCreditCode: "", amount: "", entityCode: "", entityName: "", description: ""}] });
