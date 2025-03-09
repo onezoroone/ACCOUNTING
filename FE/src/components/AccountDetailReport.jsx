@@ -9,7 +9,7 @@ import TemplateAccountDetailReport from "./TemplateAccountDetailReport"
 import ExportButton from "./ExcelAccountDetailReport";
 import Select from 'react-select';
 
-const ReportPage = (initialData) => {
+const ReportPage = () => {
   const [formData, setFormData] = useState([]);
   const [error, setError] = useState("");
   const [startDate, setStartDate] = useState(null);
