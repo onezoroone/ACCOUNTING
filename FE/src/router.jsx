@@ -39,11 +39,11 @@ const router = createBrowserRouter([
             },
             { 
                 path: "/payment",
-                element: <PaymentVoucher />
+                element: <ReceiptVoucher />
             },
             { 
                 path: "/othervoucher",
-                element: <OtherVoucher />
+                element: <ReceiptVoucher />
             },
             {
                 path: "/currencies",
